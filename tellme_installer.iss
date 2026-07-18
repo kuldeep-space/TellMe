@@ -79,8 +79,12 @@ Source: "{#SourceAppDir}\frontend\assets\*"; DestDir: "{app}\assets"; Flags: ign
 Source: "{#SourceAppDir}\frontend\themes\*"; DestDir: "{app}\frontend\themes"; Flags: ignoreversion recursesubdirs createallsubdirs
 Source: "{#SourceAppDir}\frontend\themes\*"; DestDir: "{app}\themes"; Flags: ignoreversion recursesubdirs createallsubdirs
 
-; Default runtime folders (excluding heavy models, logs, user sessions)
-Source: "{#SourceAppDir}\runtime\*"; DestDir: "{app}\runtime"; Excludes: "models\*.gguf,logs\*,temp\*,sessions\*,resumes\*,models.json,model_config.json,runtime_config.json,provider_*.json"; Flags: ignoreversion recursesubdirs createallsubdirs
+[Dirs]
+; Pre-create clean runtime directory structure (app handles dynamic data generation)
+Name: "{app}\runtime"
+Name: "{app}\runtime\logs"
+Name: "{app}\runtime\temp"
+Name: "{app}\runtime\models"
 
 [Icons]
 Name: "{autoprograms}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; AppUserModelID: "{#MyAppAppUserModelID}"
