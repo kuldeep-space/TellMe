@@ -49,6 +49,7 @@ class SettingsPanel(QWidget):
         
     def show_page(self, page_name: str):
         if page_name == "profile":
+            self.profile_page.reload()
             self.stack.setCurrentIndex(0)
         elif page_name == "model_settings":
             self.stack.setCurrentIndex(1)

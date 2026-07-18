@@ -140,7 +140,15 @@ def main() -> int:
         # ── UIStore, ThemeManager, NavigationController ────────────────
         store = UIStore()
         theme_manager = ThemeManager()
-        theme_manager._registry.auto_discover([Path(__file__).parent / "themes" / "builtin"])
+        
+        # Robust theme search paths for both dev & compiled standalone executable modes
+        theme_search_paths = [
+            Path(__file__).parent / "themes" / "builtin",
+            Path(__file__).parent / "frontend" / "themes" / "builtin",
+            Path(sys.executable).parent / "frontend" / "themes" / "builtin",
+            Path(sys.executable).parent / "themes" / "builtin",
+        ]
+        theme_manager._registry.auto_discover(theme_search_paths)
         nav_controller = NavigationController()
         profile_service = ProfileService()
         

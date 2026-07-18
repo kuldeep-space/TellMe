@@ -199,9 +199,8 @@ class ResourceManager(QObject):
         which fallback chains will be active.
         """
         result = {}
-        db_families = QFontDatabase.families()
         for family in families:
-            found = any(family.lower() in f.lower() for f in db_families)
+            found = QFontDatabase.hasFamily(family)
             result[family] = found
             if not found:
                 _logger.warning(

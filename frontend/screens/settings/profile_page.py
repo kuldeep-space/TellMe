@@ -20,6 +20,7 @@ class ProfilePage(QWidget):
         
         self._build_ui()
         self.reload()
+        self.ctx.profile_service.profile_updated.connect(lambda p: self.reload())
         
     def _build_ui(self):
         root = QVBoxLayout(self)
