@@ -97,7 +97,7 @@ def main() -> int:
         import ctypes
         try:
             ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(
-                "tellme.terminal.v0.1"
+                "tellme.app.version0.1.0"
             )
         except Exception:
             pass

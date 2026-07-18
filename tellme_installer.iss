@@ -24,6 +24,8 @@ WizardImageFile=D:\TellMe\frontend\assets\logos\Logo.bmp
 WizardSmallImageFile=D:\TellMe\frontend\assets\logos\Logo_small.bmp
 CloseApplications=force
 RestartApplications=yes
+UsedUserAreasWarning=no
+
 
 [InstallDelete]
 ; Clean up old application binaries to prevent DLL version mismatches from older Nuitka compiles
@@ -65,14 +67,14 @@ Source: "{#SourceAppDir}\runtime\*"; DestDir: "{app}\runtime"; Excludes: "models
 ; Source: "{#SourceAppDir}\runtime\models\Qwen3-14B-Q4_K_M.gguf"; DestDir: "{app}\runtime\models"; Flags: ignoreversion
 
 [Icons]
-Name: "{autoprograms}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
-Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon
+Name: "{autoprograms}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; AppUserModelID: "tellme.app.version0.1.0"
+Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon; AppUserModelID: "tellme.app.version0.1.0"
 
 [Run]
 Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
 
 [Registry]
-Root: HKCU; Subkey: "Software\TellMe"; Flags: uninsdeletekey
+Root: HKCU; Subkey: "Software\TellMe"; Flags: deletekey uninsdeletekey
 
 [UninstallDelete]
 Type: filesandordirs; Name: "{localappdata}\TellMe"

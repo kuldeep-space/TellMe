@@ -47,26 +47,42 @@ class NavigationController(QObject):
         self.stack = stacked_widget
         self.history: list[str] = []
         self.screens: dict[str, int] = {}
+        self.screen_factories: dict[str, Callable] = {}
         
     def set_stack(self, stacked_widget: QStackedWidget):
         self.stack = stacked_widget
         
-    def register_screen(self, name: str, widget):
+    def register_screen(self, name: str, widget_or_factory):
         if self.stack is None:
             _logger.error(f"Cannot register screen {name}: stack is not set.")
             return
-        idx = self.stack.addWidget(widget)
-        self.screens[name] = idx
-        _logger.debug(f"Registered screen {name} at index {idx}")
+        if callable(widget_or_factory):
+            self.screen_factories[name] = widget_or_factory
+            _logger.debug(f"Registered screen factory for {name}")
+        else:
+            idx = self.stack.addWidget(widget_or_factory)
+            self.screens[name] = idx
+            _logger.debug(f"Registered screen {name} at index {idx}")
 
     def push(self, name: str):
         if self.stack is None:
             _logger.error(f"Cannot navigate to {name}: stack is not set.")
             return
             
-        if name not in self.screens:
+        if name not in self.screens and name not in self.screen_factories:
             _logger.error(f"Cannot navigate to unknown screen: {name}")
             return
+            
+        if name not in self.screens and name in self.screen_factories:
+            _logger.info(f"Lazily instantiating screen: {name}")
+            try:
+                widget = self.screen_factories[name]()
+                idx = self.stack.addWidget(widget)
+                self.screens[name] = idx
+                _logger.debug(f"Instantiated and registered screen {name} at index {idx}")
+            except Exception as e:
+                _logger.exception(f"Failed to instantiate screen {name}: {e}")
+                return
             
         # Trigger lifecycle on_leave for current
         current_idx = self.stack.currentIndex()

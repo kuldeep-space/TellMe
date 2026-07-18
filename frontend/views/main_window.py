@@ -189,35 +189,54 @@ class MainWindow(QMainWindow):
     def _init_screens(self):
         nav = self.ctx.navigation_controller
 
-        from frontend.screens.interview_modes.screen  import InterviewModesScreen
-        from frontend.screens.interview_config.screen import InterviewConfigScreen
-        from frontend.screens.interview.screen  import InterviewScreen
-        from frontend.screens.history.screen    import HistoryScreen
-        from frontend.screens.report.screen     import ReportScreen
-        from frontend.screens.models.screen     import ModelsScreen
-        from frontend.screens.settings.screen   import SettingsScreen
+        # Lazily register screen creators to minimize start-up cost
+        def get_interview_modes():
+            from frontend.screens.interview_modes.screen import InterviewModesScreen
+            return InterviewModesScreen(self.ctx, self.content_stack)
+            
+        def get_interview_config():
+            from frontend.screens.interview_config.screen import InterviewConfigScreen
+            return InterviewConfigScreen(self.ctx, self.content_stack)
+            
+        def get_interview():
+            from frontend.screens.interview.screen import InterviewScreen
+            return InterviewScreen(self.ctx, self.content_stack)
+            
+        def get_history():
+            from frontend.screens.history.screen import HistoryScreen
+            return HistoryScreen(self.ctx, self.content_stack)
+            
+        def get_report():
+            from frontend.screens.report.screen import ReportScreen
+            return ReportScreen(self.ctx, self.content_stack)
+            
+        def get_models():
+            from frontend.screens.models.screen import ModelsScreen
+            return ModelsScreen(self.ctx, self.content_stack)
+            
+        def get_settings():
+            from frontend.screens.settings.screen import SettingsScreen
+            return SettingsScreen(self.ctx, self.content_stack)
 
-        nav.register_screen("interview_modes", InterviewModesScreen(self.ctx, self.content_stack))
-        nav.register_screen("interview_config", InterviewConfigScreen(self.ctx, self.content_stack))
-        nav.register_screen("interview", InterviewScreen(self.ctx, self.content_stack))
-        nav.register_screen("history",   HistoryScreen(self.ctx, self.content_stack))
-        nav.register_screen("report",    ReportScreen(self.ctx, self.content_stack))
-        nav.register_screen("models",    ModelsScreen(self.ctx, self.content_stack))
-        nav.register_screen("settings",  SettingsScreen(self.ctx, self.content_stack))
+        nav.register_screen("interview_modes", get_interview_modes)
+        nav.register_screen("interview_config", get_interview_config)
+        nav.register_screen("interview", get_interview)
+        nav.register_screen("history",   get_history)
+        nav.register_screen("report",    get_report)
+        nav.register_screen("models",    get_models)
+        nav.register_screen("settings",  get_settings)
 
-        from frontend.screens.onboarding.screen import OnboardingScreen
-        # Note: onboarding is not part of the main navigation stack
-        self.onboarding_screen = OnboardingScreen(self.ctx, self.root_stack)
-        self.onboarding_screen.vm.onboarding_completed.connect(self._on_onboarding_completed)
-        
         # Add root states
-        self.root_stack.addWidget(self.onboarding_screen) # Index 0: Onboarding
-        self.root_stack.addWidget(self.app_shell)         # Index 1: AppShell
+        self.root_stack.addWidget(self.app_shell)
 
         if self.ctx.profile_service.requires_onboarding:
-            self.root_stack.setCurrentIndex(0)
+            from frontend.screens.onboarding.screen import OnboardingScreen
+            self.onboarding_screen = OnboardingScreen(self.ctx, self.root_stack)
+            self.onboarding_screen.vm.onboarding_completed.connect(self._on_onboarding_completed)
+            self.root_stack.addWidget(self.onboarding_screen)
+            self.root_stack.setCurrentWidget(self.onboarding_screen)
         else:
-            self.root_stack.setCurrentIndex(1)
+            self.root_stack.setCurrentWidget(self.app_shell)
             self.ctx.profile_service.verify_resume()
             nav.push("interview_modes")
 
@@ -284,8 +303,7 @@ class MainWindow(QMainWindow):
             self.logger.error(f"Failed to set up startup model pre-load: {e}")
 
     def _on_onboarding_completed(self):
-
-        self.root_stack.setCurrentIndex(1)
+        self.root_stack.setCurrentWidget(self.app_shell)
         self.ctx.navigation_controller.push("interview_modes")
 
     def _on_navigation_requested(self, screen_id: str):
