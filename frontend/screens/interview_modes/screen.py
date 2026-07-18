@@ -218,6 +218,27 @@ class InterviewModesScreen(BaseScreen):
         # Button
         button_text = getattr(mode, "button_text", "Let's Start →")
         select_btn = self.ctx.ui.make_button(button_text, variant=ButtonVariant.PRIMARY)
+        
+        button_qss = """
+            QPushButton {
+                background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #0F6ACD, stop:1 #0B4F9A);
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                border-radius: 8px;
+                padding: 10px 16px;
+                color: white;
+                font-weight: bold;
+                font-size: 13px;
+            }
+            QPushButton:hover {
+                background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop:0 #137DEB, stop:1 #0E5EB3);
+                border: 1px solid rgba(255, 255, 255, 0.3);
+            }
+            QPushButton:pressed {
+                background: #0B4F9A;
+            }
+        """
+        select_btn.setStyleSheet(button_qss)
+        
         # Ensure it spans full width
         select_btn.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
         select_btn.clicked.connect(lambda _, m_id=mode.id: self.vm.start_interview_mode(m_id))

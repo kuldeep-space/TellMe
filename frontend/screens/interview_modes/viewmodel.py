@@ -15,8 +15,8 @@ class InterviewModesViewModel(BaseViewModel):
 
     def start_interview_mode(self, mode_id: str):
         """Dispatches the selected mode to the setup wizard."""
-        self.ctx.store.active_interview_mode = mode_id
-        self.ctx.navigation_controller.push("setup")
+        self.ctx.store.active_interview_mode = mode_id  # type: ignore
+        self.ctx.navigation_controller.push("interview_config")
 
     def go_to_history(self):
         self.ctx.navigation_controller.push("history")

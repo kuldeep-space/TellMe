@@ -145,7 +145,7 @@ class MainWindow(QMainWindow):
         nav = self.ctx.navigation_controller
 
         from frontend.screens.interview_modes.screen  import InterviewModesScreen
-        from frontend.screens.setup.screen      import SetupScreen
+        from frontend.screens.interview_config.screen import InterviewConfigScreen
         from frontend.screens.interview.screen  import InterviewScreen
         from frontend.screens.history.screen    import HistoryScreen
         from frontend.screens.report.screen     import ReportScreen
@@ -153,7 +153,7 @@ class MainWindow(QMainWindow):
         from frontend.screens.settings.screen   import SettingsScreen
 
         nav.register_screen("interview_modes", InterviewModesScreen(self.ctx, self.content_stack))
-        nav.register_screen("setup",     SetupScreen(self.ctx, self.content_stack))
+        nav.register_screen("interview_config", InterviewConfigScreen(self.ctx, self.content_stack))
         nav.register_screen("interview", InterviewScreen(self.ctx, self.content_stack))
         nav.register_screen("history",   HistoryScreen(self.ctx, self.content_stack))
         nav.register_screen("report",    ReportScreen(self.ctx, self.content_stack))

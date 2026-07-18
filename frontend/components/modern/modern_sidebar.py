@@ -46,7 +46,7 @@ class ModernSidebar(BaseSidebar):
         sep2.setStyleSheet(f"background: {sub_color}; opacity: 0.1; margin: 12px 0px;")
         layout.addWidget(sep2)
         
-        github_item = NavigationItem(id="github", title="Kuldeep", icon="github.svg", route="", order=99)
+        github_item = NavigationItem(id="github", title="Kuldeep-space", icon="github.svg", route="", order=99)
         github_btn = SidebarNavItem(engine, github_item)
         github_btn.clicked.connect(self._open_github)
         layout.addWidget(github_btn)

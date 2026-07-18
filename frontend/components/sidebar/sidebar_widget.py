@@ -19,18 +19,19 @@ from PySide6.QtWidgets import (
     QSizePolicy, QSpacerItem
 )
 from PySide6.QtCore import Qt, Signal, QTimer
+from typing import Optional
 from frontend.components.base.base_sidebar import BaseSidebar
 from frontend.engine import StyleEngine
 
 
 # ── Tree prefix constants ──────────────────────────────────────────────
 _ITEMS = [
-    ("dashboard",  "HOME",       ">"),
-    ("setup",      "INTERVIEWS", "├"),
-    ("history",    "HISTORY",    "├"),
-    ("report",     "REPORTS",    "├"),
-    ("models",     "MODELS",     "├"),
-    ("settings",   "SETTINGS",   "└"),
+    ("dashboard",        "HOME",              ">"),
+    ("interview_config", "INTERVIEWS",        "├"),
+    ("history",          "HISTORY",           "├"),
+    ("report",           "REPORTS",           "├"),
+    ("models",           "MODELS",            "├"),
+    ("settings",         "SETTINGS",          "└"),
 ]
 
 
@@ -49,7 +50,7 @@ class _SidebarBtn(QPushButton):
 class TerminalSidebar(BaseSidebar):
     navigation_requested = Signal(str)
 
-    def __init__(self, engine: StyleEngine = None, parent=None):
+    def __init__(self, engine: Optional[StyleEngine] = None, parent=None):
         super().__init__(engine, parent)
         self.setObjectName("terminalSidebar")
         
