@@ -1,0 +1,8 @@
+{
+  "temperature": 0.43,
+  "top_p": 0.64,
+  "top_k": 44.0,
+  "repeat_penalty": 1.13,
+  "max_tokens": 3725.0,
+  "n_gpu_layers": -1.0
+}

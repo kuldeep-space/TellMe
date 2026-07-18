@@ -1,5 +1,6 @@
 
 from dataclasses import dataclass
+from typing import Any
 from frontend.core.resources import ResourceManager
 from frontend.core.theme import ThemeManager
 from frontend.core.navigation import NavigationController
@@ -20,7 +21,7 @@ class AppContext:
     profile_service: ProfileService
     store: UIStore
     draft_manager: DraftManager
-    logger: object = get_logger("frontend.app_context")
+    logger: Any = get_logger("frontend.app_context")
 
     @property
     def ui(self):

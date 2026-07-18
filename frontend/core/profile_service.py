@@ -11,6 +11,7 @@ import os
 import shutil
 import uuid
 from pathlib import Path
+from typing import Optional
 from PySide6.QtCore import QObject, Signal, QSettings
 
 @dataclass
@@ -84,7 +85,7 @@ class ProfileService(QObject):
         base_dir.mkdir(parents=True, exist_ok=True)
         return base_dir
 
-    def update_profile(self, name: str = None, resume_path: str = None):
+    def update_profile(self, name: Optional[str] = None, resume_path: Optional[str] = None):
         """Update parts of the profile and save."""
         now = datetime.now().isoformat()
         if not self._profile.created_at:

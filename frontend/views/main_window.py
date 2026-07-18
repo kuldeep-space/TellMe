@@ -220,8 +220,70 @@ class MainWindow(QMainWindow):
             self.root_stack.setCurrentIndex(1)
             self.ctx.profile_service.verify_resume()
             nav.push("interview_modes")
+
+        # ── Startup Model Pre-load ─────────────────────────────────────
+        from PySide6.QtCore import QTimer
+        QTimer.singleShot(1000, self._preload_active_model)
             
+    def _preload_active_model(self):
+        """Asynchronously pre-loads the selected model in the background at startup."""
+        import json
+        import os
+        from backend.core.tasks import TaskManager
+        from backend.core.model_registry import ModelRegistry
+        from backend.core.model_runtime import ModelRuntime
+
+        config_path = os.path.join("D:\\TellMe\\runtime", "model_config.json")
+        if not os.path.exists(config_path):
+            return
+
+        try:
+            with open(config_path, "r") as f:
+                cfg = json.load(f)
+            selected_model_id = cfg.get("selected_model_id")
+            if not selected_model_id:
+                return
+
+            registry = ModelRegistry.get_instance()
+            descriptor = registry.get(selected_model_id)
+            if not descriptor:
+                self.logger.warning(f"Startup Pre-load: Model '{selected_model_id}' not found in registry.")
+                return
+
+            runtime = ModelRuntime.get_instance()
+            if runtime.active_model_id == descriptor.id:
+                return  # Already loaded
+
+            self.status_bar.set_status(f"PRE-LOADING: {descriptor.display_name}")
+            
+            # Load global runtime config
+            runtime_cfg_path = os.path.join("D:\\TellMe\\runtime", "runtime_config.json")
+            runtime_config = {}
+            if os.path.exists(runtime_cfg_path):
+                with open(runtime_cfg_path, "r") as f:
+                    runtime_config = json.load(f)
+
+            def _preload_worker(worker=None):
+                runtime.load_model(descriptor, runtime_config)
+
+            task_manager = TaskManager.get_instance()
+            task_id = task_manager.submit(_preload_worker, worker=None)
+            worker = task_manager.get_worker(task_id)
+            if worker:
+                def _on_success(t_id, res):
+                    self.status_bar.set_status("READY")
+                def _on_error(t_id, err):
+                    self.status_bar.set_status("LOAD ERROR")
+                    self.logger.error(f"Startup Pre-load failed: {err}")
+                worker.signals.result.connect(_on_success)
+                worker.signals.error.connect(_on_error)
+
+
+        except Exception as e:
+            self.logger.error(f"Failed to set up startup model pre-load: {e}")
+
     def _on_onboarding_completed(self):
+
         self.root_stack.setCurrentIndex(1)
         self.ctx.navigation_controller.push("interview_modes")
 

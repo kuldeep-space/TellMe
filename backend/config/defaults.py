@@ -35,6 +35,8 @@ DEFAULT_LLM_TEMPERATURE: float = 0.7
 DEFAULT_LLM_TOP_P: float = 0.9
 DEFAULT_LLM_REPEAT_PENALTY: float = 1.1
 DEFAULT_LLM_GPU_LAYERS: int = 0          # 0 = CPU only; user configures this
+DEFAULT_ALLOW_UNSAFE_LOADING: bool = True
+
 
 # ─────────────────────────────────────────────
 # Speech Provider

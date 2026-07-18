@@ -152,3 +152,6 @@ class TerminalSidebar(BaseSidebar):
     # Called from MainWindow after navigation
     def reflect_navigation(self, screen_id: str):
         self._set_active(screen_id)
+
+
+

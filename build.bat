@@ -1,0 +1,3 @@
+@echo off
+echo Starting TellMe standalone compilation using Nuitka...
+python -m nuitka --standalone --show-memory --show-progress --enable-plugin=pyside6 --include-package=frontend.themes.builtin --include-package=backend.providers.adapters --follow-imports frontend/app.py

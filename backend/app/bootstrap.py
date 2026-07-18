@@ -15,13 +15,26 @@ This module does NOT start the UI. The frontend is responsible for
 calling `bootstrap()` as its first action before creating any widgets.
 """
 
+import os
+import sys
 from pathlib import Path
+
+# Configure Windows DLL search path for llama_cpp local dependencies
+if sys.platform == "win32":
+    try:
+        project_root = Path(__file__).resolve().parent.parent.parent
+        local_bin_dir = project_root / "dependencies" / "llama_binaries"
+        if local_bin_dir.is_dir():
+            os.add_dll_directory(str(local_bin_dir))
+    except Exception:
+        pass
 
 from backend.config.settings import get_settings
 from backend.core.container import ServiceContainer
 from backend.core.event_bus import EventBus
 from backend.core.exceptions import ConfigurationError
 from backend.core.logging import configure_logging, get_logger
+
 
 _logger = get_logger(__name__)
 

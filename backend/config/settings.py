@@ -71,6 +71,8 @@ class AppSettings(BaseSettings):
 
     active_llm_backend: str = Field(default=defaults.DEFAULT_LLM_BACKEND)
     active_model_id: str | None = Field(default=None)
+    allow_unsafe_loading: bool = Field(default=defaults.DEFAULT_ALLOW_UNSAFE_LOADING)
+
 
     # ─────────────────────────────────────────────
     # Speech Provider
