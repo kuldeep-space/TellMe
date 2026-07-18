@@ -13,6 +13,7 @@ class ModernStatusBar(QWidget):
         
         self.status_lbl = QLabel("READY")
         self.status_lbl.setObjectName("ModernStatusLabel")
+        self.status_lbl.setStyleSheet("color: #666666; font-size: 11px;")
         layout.addWidget(self.status_lbl)
         layout.addStretch()
 

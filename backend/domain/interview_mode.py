@@ -20,6 +20,8 @@ class InterviewMode:
     estimated_duration: str
     difficulty_support: bool = False
     required_inputs: List[InputField] = field(default_factory=list)
+    feature_list: List[str] = field(default_factory=list)
+    button_text: str = "Let's Start →"
 
 class InterviewRegistry:
     """Central registry for all dynamic interview modes."""
@@ -44,55 +46,55 @@ class InterviewRegistry:
             grouped.setdefault(mode.category, []).append(mode)
         return grouped
 
-# ── Register Built-in Modes (Simulated for now, would typically be discovered) ──
+# ── Register Built-in Modes ──
 InterviewRegistry.register(InterviewMode(
-    id="swe_behavioral",
-    title="Behavioral & Leadership",
-    description="Deep dive into past experiences, conflict resolution, and leadership skills.",
-    category="Behavioral",
-    icon="Users",
-    estimated_duration="30m",
-    required_inputs=[
-        InputField(id="resume", type="file", label="Resume / CV", placeholder="Upload PDF..."),
-        InputField(id="role", type="text", label="Target Role", placeholder="e.g., Engineering Manager")
-    ]
-))
-
-InterviewRegistry.register(InterviewMode(
-    id="swe_technical",
-    title="Technical & Algorithmic",
-    description="Data structures, problem solving, and low-level system understanding.",
-    category="Technical",
-    icon="Code",
-    estimated_duration="45m",
-    difficulty_support=True,
-    required_inputs=[
-        InputField(id="language", type="dropdown", label="Programming Language", placeholder="Select...", options=["Python", "C++", "Rust", "Go", "Java"]),
-        InputField(id="resume", type="file", label="Resume (Optional)", placeholder="Upload PDF...", required=False)
-    ]
-))
-
-InterviewRegistry.register(InterviewMode(
-    id="swe_system_design",
-    title="System Design",
-    description="Architect scalable backends, distributed systems, and data pipelines.",
-    category="Technical",
-    icon="Server",
-    estimated_duration="45m",
-    difficulty_support=True,
-    required_inputs=[
-        InputField(id="target_company", type="text", label="Target Company (Optional)", placeholder="e.g., Netflix", required=False)
-    ]
-))
-
-InterviewRegistry.register(InterviewMode(
-    id="career_history",
-    title="Career History",
-    description="A comprehensive walkthrough of your resume, identifying strengths and weaknesses.",
-    category="Behavioral",
-    icon="Briefcase",
+    id="resume_interview",
+    title="Resume Interview",
+    description="Practice an AI interview based on your uploaded resume.",
+    category="Standard",
+    icon="FileText",
     estimated_duration="30m",
     required_inputs=[
         InputField(id="resume", type="file", label="Resume / CV", placeholder="Upload PDF...")
+    ],
+    feature_list=[
+        "Resume analysis",
+        "Experience-based questions",
+        "Real interview simulation"
+    ]
+))
+
+InterviewRegistry.register(InterviewMode(
+    id="company_interview",
+    title="Company Interview",
+    description="Practice an HR-style interview tailored to a specific job description.",
+    category="Standard",
+    icon="Briefcase",
+    estimated_duration="45m",
+    required_inputs=[
+        InputField(id="job_description", type="text", label="Job Description", placeholder="Paste job description...")
+    ],
+    feature_list=[
+        "JD requirement extraction",
+        "Role-specific questions",
+        "Company-focused prep"
+    ]
+))
+
+InterviewRegistry.register(InterviewMode(
+    id="custom_interview",
+    title="Custom Interview",
+    description="Create a custom interview by selecting topics and difficulty.",
+    category="Custom",
+    icon="Settings",
+    estimated_duration="Flex",
+    difficulty_support=True,
+    required_inputs=[
+        InputField(id="topics", type="text", label="Topics", placeholder="e.g., Python, System Design")
+    ],
+    feature_list=[
+        "Custom topics & difficulty",
+        "Flexible interview flow",
+        "Personalized experience"
     ]
 ))

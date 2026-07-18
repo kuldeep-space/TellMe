@@ -29,53 +29,76 @@ class InterviewModesScreen(BaseScreen):
         scroll = QScrollArea()
         scroll.setWidgetResizable(True)
         scroll.setFrameShape(QScrollArea.Shape.NoFrame)
-        scroll.setStyleSheet("background: transparent;")
+        scroll.setStyleSheet("""
+            QScrollArea {
+                background: transparent;
+            }
+            QScrollBar:horizontal {
+                border: none;
+                background: transparent;
+                height: 12px;
+                margin: 0px 40px 0px 40px;
+                border-radius: 6px;
+            }
+            QScrollBar::handle:horizontal {
+                background: rgba(255, 255, 255, 0.3);
+                min-width: 40px;
+                border-radius: 6px;
+            }
+            QScrollBar::handle:horizontal:hover {
+                background: rgba(255, 255, 255, 0.5);
+            }
+            QScrollBar::add-line:horizontal, QScrollBar::sub-line:horizontal {
+                width: 0px;
+            }
+            QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {
+                background: none;
+                border: none;
+            }
+        """)
 
         scroll_content = QWidget()
         scroll_layout = QVBoxLayout(scroll_content)
+        scroll_layout.setAlignment(Qt.AlignmentFlag.AlignTop | Qt.AlignmentFlag.AlignLeft)
         scroll_layout.setContentsMargins(40, 40, 40, 40)
-        scroll_layout.setSpacing(32)
+        scroll_layout.setSpacing(64)
 
-        # ── Hero Section ────────────────────────────────────────────────
-        hero_layout = QVBoxLayout()
-        hero_layout.setSpacing(8)
+        # ── Header ──────────────────────────────────────────────────────
+        header_layout = QVBoxLayout()
+        header_layout.setSpacing(8)
         
         greeting = self.ctx.ui.make_label("Start Preparation", role=LabelRole.H1.value)
         subtitle = self.ctx.ui.make_label("Choose an interview mode to begin your AI interview.", role=LabelRole.MUTED.value)
         
-        hero_layout.addWidget(greeting)
-        hero_layout.addWidget(subtitle)
-        hero_layout.addSpacing(16)
+        header_layout.addWidget(greeting)
+        header_layout.addWidget(subtitle)
         
-        scroll_layout.addLayout(hero_layout)
+        scroll_layout.addLayout(header_layout)
 
-        # ── Dynamic Categories ──────────────────────────────────────────
-        categories = self.vm.get_interview_categories()
+        # ── Interview Mode Cards ─────────────────────────────────────────
+        grid = QGridLayout()
+        grid.setSpacing(24)
         
-        for category, modes in categories.items():
-            cat_layout = QVBoxLayout()
-            cat_layout.setSpacing(16)
-            
-            cat_title = self.ctx.ui.make_label(category, role=LabelRole.H2.value)
-            cat_layout.addWidget(cat_title)
-            
-            # Grid for cards
-            grid = QGridLayout()
-            grid.setSpacing(16)
-            
-            col = 0
-            row = 0
-            for mode in modes:
-                card = self._build_mode_card(mode)
-                grid.addWidget(card, row, col)
-                col += 1
-                if col > 1: # 2 columns max for better readability at desktop size
-                    col = 0
-                    row += 1
-            
-            cat_layout.addLayout(grid)
-            scroll_layout.addLayout(cat_layout)
-            scroll_layout.addSpacing(24)
+        all_modes = self.vm.get_all_modes()
+        
+        col = 0
+        row = 0
+        for mode in all_modes:
+            card = self._build_mode_card(mode)
+            card.setMinimumWidth(280)
+            card.setMaximumWidth(340)
+            grid.addWidget(card, row, col)
+            col += 1
+            if col > 2: # 3 columns max
+                col = 0
+                row += 1
+                
+        grid_wrapper = QHBoxLayout()
+        grid_wrapper.addStretch()
+        grid_wrapper.addLayout(grid)
+        grid_wrapper.addStretch()
+                
+        scroll_layout.addLayout(grid_wrapper)
 
         # ── Recent Interviews Table ──────────────────────────────────────
         table_layout = QVBoxLayout()
@@ -84,28 +107,33 @@ class InterviewModesScreen(BaseScreen):
         table_title = self.ctx.ui.make_label("Recent Interviews", role=LabelRole.H2.value)
         table_layout.addWidget(table_title)
         
-        # We will use a QTableWidget or custom widget for the table.
-        # For now, a styled QFrame acting as an empty state.
-        from PySide6.QtWidgets import QFrame
-        table_frame = QFrame()
+        from PySide6.QtWidgets import QTableWidget, QTableWidgetItem, QHeaderView, QFrame
         
-        bg_color = self.ctx.ui._engine.resolver.resolve_color("colors.surface")
-        border_color = self.ctx.ui._engine.resolver.resolve_color("colors.border")
-        radius = self.ctx.ui._engine.resolver.resolve_str("radius.md")
+        table = QTableWidget(0, 5)
+        table.setHorizontalHeaderLabels(["Date", "Interview Name", "Mode", "Performance", "Report"])
+        table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
+        table.verticalHeader().setVisible(False)
+        table.setShowGrid(False)
+        table.setAlternatingRowColors(True)
+        table.setFocusPolicy(Qt.FocusPolicy.NoFocus)
+        table.setSelectionMode(QTableWidget.SelectionMode.NoSelection)
+        table.setMinimumHeight(120)
         
-        table_frame.setStyleSheet(f"""
-            QFrame {{
-                background-color: {bg_color};
-                border: 1px solid {border_color};
-                border-radius: {radius}px;
-            }}
-        """)
-        table_frame.setMinimumHeight(200)
-        
-        tf_layout = QVBoxLayout(table_frame)
-        empty_lbl = self.ctx.ui.make_label("No recent interviews found.", role=LabelRole.MUTED.value)
+        # In the future, we will populate this with actual history.
+        # For now, it will just show the empty state message.
+        empty_lbl = self.ctx.ui.make_label("No interviews yet. Start your first interview.", role=LabelRole.MUTED.value)
         empty_lbl.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        tf_layout.addWidget(empty_lbl)
+        
+        # We can stack the empty label over the table or just show it if rowCount == 0
+        table_frame = QFrame()
+        tf_layout = QVBoxLayout(table_frame)
+        tf_layout.setContentsMargins(0, 0, 0, 0)
+        tf_layout.addWidget(table)
+        
+        # If no rows, overlay the empty state
+        if table.rowCount() == 0:
+            tf_layout.addWidget(empty_lbl)
+            table.hide()
         
         table_layout.addWidget(table_frame)
         scroll_layout.addLayout(table_layout)
@@ -123,9 +151,8 @@ class InterviewModesScreen(BaseScreen):
         bg_color = self.ctx.ui._engine.resolver.resolve_color("colors.surface")
         border_color = self.ctx.ui._engine.resolver.resolve_color("colors.border")
         hover_color = self.ctx.ui._engine.resolver.resolve_color("colors.surface_hover")
-        radius = self.ctx.ui._engine.resolver.resolve_str("radius.md")
+        radius = self.ctx.ui._engine.resolver.resolve_str("radius.lg")
         
-        # Flat styling with rounded corners, no neumorphism
         card.setStyleSheet(f"""
             QFrame {{
                 background-color: {bg_color};
@@ -134,19 +161,29 @@ class InterviewModesScreen(BaseScreen):
             }}
             QFrame:hover {{
                 background-color: {hover_color};
-                border: 1px solid #555555;
+                border: 1px solid #999999;
             }}
         """)
         
+        from PySide6.QtWidgets import QGraphicsDropShadowEffect
+        from PySide6.QtGui import QColor
+        shadow = QGraphicsDropShadowEffect()
+        shadow.setBlurRadius(24)
+        shadow.setColor(QColor(0, 0, 0, 60))
+        shadow.setOffset(0, 6)
+        card.setGraphicsEffect(shadow)
+        
         card_layout = QVBoxLayout(card)
-        card_layout.setContentsMargins(20, 20, 20, 20)
+        card_layout.setContentsMargins(24, 24, 24, 24)
         card_layout.setSpacing(12)
         
         # Header (Icon + Title)
         header_layout = QHBoxLayout()
         header_layout.setContentsMargins(0, 0, 0, 0)
+        header_layout.setSpacing(12)
         
-        # Add Title
+        # We can use a label for the icon, or just the title if no actual SVG is easily available.
+        # But we have `mode.icon` which could map to a string or icon. We will just use the text.
         title_lbl = self.ctx.ui.make_label(mode.title, role=LabelRole.H2.value)
         title_lbl.setStyleSheet(title_lbl.styleSheet() + "border: none; background: transparent;")
         header_layout.addWidget(title_lbl)
@@ -157,22 +194,34 @@ class InterviewModesScreen(BaseScreen):
         desc_lbl = self.ctx.ui.make_label(mode.description, role=LabelRole.MUTED.value)
         desc_lbl.setStyleSheet(desc_lbl.styleSheet() + "border: none; background: transparent;")
         desc_lbl.setWordWrap(True)
-        desc_lbl.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Minimum)
+        desc_lbl.setMaximumWidth(240)
         card_layout.addWidget(desc_lbl)
         
-        # Footer
-        footer_layout = QHBoxLayout()
-        footer_layout.setContentsMargins(0, 8, 0, 0)
+        card_layout.addSpacing(8)
         
-        duration_lbl = self.ctx.ui.make_label(f"⏱ {mode.estimated_duration}", role=LabelRole.MUTED.value)
-        duration_lbl.setStyleSheet(duration_lbl.styleSheet() + "border: none; background: transparent;")
-        footer_layout.addWidget(duration_lbl)
+        # Features List
+        features_layout = QVBoxLayout()
+        features_layout.setSpacing(6)
         
-        footer_layout.addStretch()
+        # Assume mode.feature_list exists now
+        features = getattr(mode, "feature_list", [])
+        for feature in features:
+            f_lbl = self.ctx.ui.make_label(f"• {feature}", role=LabelRole.PRIMARY.value)
+            f_lbl.setStyleSheet(f_lbl.styleSheet() + "border: none; background: transparent; color: #a0a0a0;")
+            features_layout.addWidget(f_lbl)
+            
+        card_layout.addLayout(features_layout)
         
-        select_btn = self.ctx.ui.make_button("Select", variant=ButtonVariant.SECONDARY)
+        # Stretch pushes the button to the bottom, ensuring equal height cards across row
+        card_layout.addStretch(1)
+        
+        # Button
+        button_text = getattr(mode, "button_text", "Let's Start →")
+        select_btn = self.ctx.ui.make_button(button_text, variant=ButtonVariant.PRIMARY)
+        # Ensure it spans full width
+        select_btn.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
         select_btn.clicked.connect(lambda _, m_id=mode.id: self.vm.start_interview_mode(m_id))
-        footer_layout.addWidget(select_btn)
         
-        card_layout.addLayout(footer_layout)
+        card_layout.addWidget(select_btn)
+        
         return card

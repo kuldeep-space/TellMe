@@ -182,7 +182,7 @@ class MainWindow(QMainWindow):
 
     def _on_navigated(self, screen_id: str):
         self.sidebar.reflect_navigation(screen_id)
-        self.status_bar.set_status(f"cd /{screen_id}")
+        self.status_bar.set_status("v0.1.0")
 
     def resizeEvent(self, event):
         super().resizeEvent(event)

@@ -9,6 +9,10 @@ class InterviewModesViewModel(BaseViewModel):
         """Returns modes grouped by category."""
         return InterviewRegistry.get_by_category()
 
+    def get_all_modes(self):
+        """Returns all modes flat."""
+        return InterviewRegistry.get_all()
+
     def start_interview_mode(self, mode_id: str):
         """Dispatches the selected mode to the setup wizard."""
         self.ctx.store.active_interview_mode = mode_id

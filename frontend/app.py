@@ -158,16 +158,36 @@ def main() -> int:
         theme_manager.apply_theme("modern")
         t_theme_end = time.time()
 
-        # ── Set window icon ────────────────────────────────────────────
+        # ── Set window icon and Taskbar Icon ───────────────────────────
+        if sys.platform == "win32":
+            import ctypes
+            myappid = 'tellme.app.version0.1.0'
+            ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
+            
         logo = resource_manager.get_pixmap("Logo.png")
         if not logo.isNull():
-            from PySide6.QtGui import QIcon
-            app.setWindowIcon(QIcon(logo))
+            from PySide6.QtGui import QIcon, QPixmap, QPainter, QPainterPath
+            from PySide6.QtCore import QRectF
+            
+            rounded = QPixmap(logo.size())
+            rounded.fill(Qt.GlobalColor.transparent)
+            
+            painter = QPainter(rounded)
+            painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+            
+            path = QPainterPath()
+            path.addRoundedRect(QRectF(0, 0, logo.width(), logo.height()), 5, 5)
+            
+            painter.setClipPath(path)
+            painter.drawPixmap(0, 0, logo)
+            painter.end()
+            
+            app.setWindowIcon(QIcon(rounded))
 
         # ── MainWindow ─────────────────────────────────────────────────
         t_nav = time.time()
         window = MainWindow(app_context)
-        window.show()
+        window.showMaximized()
         t_nav_end = time.time()
 
         # ── Performance Report ─────────────────────────────────────────
