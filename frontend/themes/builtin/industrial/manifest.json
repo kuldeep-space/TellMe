@@ -1,0 +1,9 @@
+{
+    "id": "industrial",
+    "name": "Industrial",
+    "version": "1.0.0",
+    "description": "Skeuomorphic industrial machinery aesthetic with metal panels and LED indicators.",
+    "author": "TellMe Project",
+    "entrypoint": "themes.builtin.industrial",
+    "capabilities": ["neumorphism", "metallic_textures", "led_glow"]
+}

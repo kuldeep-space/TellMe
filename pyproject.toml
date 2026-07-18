@@ -1,0 +1,64 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.backends.legacy:build"
+
+[project]
+name = "tellme"
+version = "0.1.0"
+description = "AI-powered Interview Copilot desktop application"
+readme = "README.md"
+requires-python = ">=3.12"
+license = { text = "MIT" }
+
+[project.dependencies]
+# Core UI framework
+PySide6 = ">=6.7.0"
+
+# Data validation and settings
+pydantic = ">=2.7.0"
+pydantic-settings = ">=2.3.0"
+
+# HTTP client (for URL fetchers and optional API calls)
+httpx = ">=0.27.0"
+
+# Database ORM
+SQLAlchemy = ">=2.0.30"
+
+# Logging
+loguru = ">=0.7.2"
+
+# Environment variable management
+python-dotenv = ">=1.0.1"
+
+[project.optional-dependencies]
+# LLM Inference (optional: users install separately if using llama.cpp)
+# llama-cpp-python = ">=0.2.0"
+
+# PDF Parsing
+pdfplumber = ">=0.11.0"
+
+# Development tooling
+dev = [
+    "pytest>=8.2.0",
+    "pytest-asyncio>=0.23.0",
+    "ruff>=0.4.0",
+    "mypy>=1.10.0",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["backend*", "frontend*"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py312"
+select = ["E", "F", "I", "N", "W"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+ignore_missing_imports = true

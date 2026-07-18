@@ -1,0 +1,99 @@
+/* 
+Industrial Theme Stylesheet
+Most components handle their own neumorphic painting, but base Qt widgets need some styling.
+*/
+
+QWidget {
+    color: #e6e6e6;
+    font-family: "Roboto", sans-serif;
+}
+
+QScrollBar:vertical {
+    background: #1e2226;
+    width: 14px;
+    margin: 0px 0px 0px 0px;
+    border-left: 1px solid #0f1114;
+}
+
+QScrollBar::handle:vertical {
+    background: #3a4149;
+    min-height: 20px;
+    border-radius: 4px;
+    margin: 2px;
+    border: 1px solid #0f1114;
+}
+
+QScrollBar::handle:vertical:hover {
+    background: #4a535c;
+}
+
+QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
+    height: 0px;
+}
+
+QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
+    background: none;
+}
+
+/* Horizontal scrollbar */
+QScrollBar:horizontal {
+    background: #1e2226;
+    height: 14px;
+    margin: 0px 0px 0px 0px;
+    border-top: 1px solid #0f1114;
+}
+
+QScrollBar::handle:horizontal {
+    background: #3a4149;
+    min-width: 20px;
+    border-radius: 4px;
+    margin: 2px;
+    border: 1px solid #0f1114;
+}
+
+QScrollBar::handle:horizontal:hover {
+    background: #4a535c;
+}
+
+QScrollBar::add-line:horizontal, QScrollBar::sub-line:horizontal {
+    width: 0px;
+}
+
+QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {
+    background: none;
+}
+
+/* BaseInput / QLineEdit */
+QLineEdit {
+    background: transparent;
+    color: #ff6600;
+    border: none;
+    padding: 0 8px;
+    font-family: "Courier New", monospace;
+    font-weight: bold;
+    selection-background-color: #ff6600;
+    selection-color: #1e2226;
+}
+
+QLineEdit:disabled {
+    color: #6a7178;
+}
+
+/* TextAreas */
+QTextEdit {
+    background: transparent;
+    color: #00ccff;
+    border: none;
+    font-family: "Courier New", monospace;
+    selection-background-color: #00ccff;
+    selection-color: #1e2226;
+}
+
+/* Custom ObjectNames from Industrial */
+QLabel#statusBarLabel {
+    color: #6a7178;
+}
+
+QLabel#statusBarLabelPrimary {
+    color: #a0a5ab;
+}

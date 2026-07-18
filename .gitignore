@@ -1,0 +1,61 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.pyd
+
+# Virtual Environments
+.venv/
+venv/
+env/
+
+# Environment Files
+.env
+*.env.local
+
+# Runtime Data (code-free, generated at runtime)
+runtime/cache/
+runtime/logs/
+runtime/temp/
+runtime/sessions/
+runtime/*.db
+runtime/*.db-shm
+runtime/*.db-wal
+
+# Build Artifacts
+dist/
+build/
+app.build/
+app.dist/
+nuitka-crash-report.xml
+*.egg-info/
+.eggs/
+
+# Large AI Models
+Model/
+*.gguf
+*.bin
+
+# IDE
+.vscode/
+.idea/
+.vs/
+*.sublime-project
+*.sublime-workspace
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Type Checking
+.mypy_cache/
+
+# Linting
+.ruff_cache/
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini

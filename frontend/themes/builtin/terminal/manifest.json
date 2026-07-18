@@ -1,0 +1,12 @@
+{
+    "id": "terminal",
+    "name": "Terminal",
+    "author": "TellMe Core Team",
+    "version": "1.0.0",
+    "description": "Dark phosphor-green terminal aesthetic. Pure black background. Monospace-only. CRT scanlines. ASCII art borders. The original TellMe look.",
+    "supports": ">=0.1.0",
+    "is_light_mode": false,
+    "preview_image": "preview.png",
+    "tags": ["dark", "retro", "terminal", "monospace", "minimal"],
+    "requires_fonts": ["JetBrains Mono"]
+}
