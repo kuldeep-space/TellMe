@@ -1,0 +1,132 @@
+/* Modern Theme QSS */
+
+QWidget {
+    background-color: transparent;
+    color: {{ colors.text_primary }};
+}
+
+QMainWindow {
+    background-color: {{ colors.bg_base }};
+}
+
+QScrollArea {
+    border: none;
+    background: transparent;
+}
+
+/* Base Labels */
+QLabel {
+    color: {{ colors.text_primary }};
+}
+QLabel#CoreLabelMuted {
+    color: {{ colors.text_muted }};
+}
+QLabel#CoreLabelSecondary {
+    color: {{ colors.text_secondary }};
+}
+QLabel#CoreLabelDanger {
+    color: {{ colors.danger }};
+}
+QLabel#CoreLabelH1 {
+    font-size: 24px;
+    font-weight: bold;
+}
+QLabel#CoreLabelH2 {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+/* Modern Panel */
+QWidget#ModernPanel {
+    background-color: {{ colors.bg_panel }};
+    border-radius: {{ metrics.radius_md }};
+    border: 1px solid {{ colors.border }};
+}
+
+/* Inputs */
+QWidget#ModernInputContainer {
+    background-color: {{ colors.bg_surface }};
+    border-radius: {{ metrics.radius_sm }};
+    border: 1px solid transparent;
+}
+QWidget#ModernInputContainer:focus-within {
+    border: 1px solid {{ colors.accent }};
+    background-color: {{ colors.bg_hover }};
+}
+QLabel#ModernInputPrompt {
+    color: {{ colors.text_muted }};
+}
+QLineEdit#ModernInputBox {
+    background: transparent;
+    color: {{ colors.text_primary }};
+    border: none;
+}
+QLineEdit#ModernInputBox:focus {
+    outline: none;
+}
+
+/* Buttons */
+QPushButton#ModernButtonPrimary {
+    background-color: {{ colors.accent }};
+    color: #ffffff;
+    border-radius: {{ metrics.radius_sm }};
+    border: none;
+    font-weight: bold;
+}
+QPushButton#ModernButtonPrimary:hover {
+    background-color: {{ colors.accent_hover }};
+}
+QPushButton#ModernButtonPrimary:pressed {
+    background-color: {{ colors.accent_active }};
+}
+
+QPushButton#ModernButtonSecondary {
+    background-color: {{ colors.bg_surface }};
+    color: {{ colors.text_primary }};
+    border-radius: {{ metrics.radius_sm }};
+    border: 1px solid {{ colors.border }};
+}
+QPushButton#ModernButtonSecondary:hover {
+    background-color: {{ colors.bg_hover }};
+    border: 1px solid {{ colors.text_muted }};
+}
+
+QPushButton#ModernButtonGhost {
+    background-color: transparent;
+    color: {{ colors.text_secondary }};
+    border-radius: {{ metrics.radius_sm }};
+    border: none;
+}
+QPushButton#ModernButtonGhost:hover {
+    background-color: {{ colors.bg_hover }};
+    color: {{ colors.text_primary }};
+}
+
+/* Progress */
+QProgressBar#ModernProgress {
+    background-color: {{ colors.bg_surface }};
+    border-radius: 3px;
+    border: none;
+}
+QProgressBar#ModernProgress::chunk {
+    background-color: {{ colors.accent }};
+    border-radius: 3px;
+}
+
+/* Scrollbars */
+QScrollBar:vertical {
+    background: transparent;
+    width: 8px;
+    margin: 0px 0px 0px 0px;
+}
+QScrollBar::handle:vertical {
+    background: {{ colors.border }};
+    min-height: 20px;
+    border-radius: 4px;
+}
+QScrollBar::handle:vertical:hover {
+    background: {{ colors.text_muted }};
+}
+QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
+    height: 0px;
+}

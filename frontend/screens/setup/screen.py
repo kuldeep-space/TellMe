@@ -76,14 +76,14 @@ class SetupScreen(BaseScreen):
 
         # --role
         form_win.add_widget(self._flag_label("--role", "Target role"))
-        self._role_input = self.ctx.ui.make_input(placeholder="Software Engineer", prompt="--role ")
+        self._role_input = self.ctx.ui.make_input(placeholder="Software Engineer", prompt="Role")
         form_win.add_widget(self._role_input)
 
         form_win.add_widget(self.ctx.ui.make_separator())
 
         # --company
         form_win.add_widget(self._flag_label("--company", "Target company (optional)"))
-        self._company_input = self.ctx.ui.make_input(placeholder="Google, Meta, etc.", prompt="--company ")
+        self._company_input = self.ctx.ui.make_input(placeholder="Google, Meta, etc.", prompt="Company")
         form_win.add_widget(self._company_input)
 
         form_win.add_widget(self.ctx.ui.make_separator())
@@ -91,7 +91,7 @@ class SetupScreen(BaseScreen):
         # --resume
         form_win.add_widget(self._flag_label("--resume", "Resume / CV path"))
         resume_row = QHBoxLayout()
-        self._resume_input = self.ctx.ui.make_input(placeholder="Drag PDF here or type path...", prompt="--resume ")
+        self._resume_input = self.ctx.ui.make_input(placeholder="Drag PDF here or type path...", prompt="Resume")
         self._resume_btn   = self.ctx.ui.make_button("BROWSE")
         self._resume_btn.clicked.connect(self._browse_resume)
         resume_row.addWidget(self._resume_input, stretch=1)
@@ -103,7 +103,7 @@ class SetupScreen(BaseScreen):
         # --jd
         form_win.add_widget(self._flag_label("--jd", "Job description path (optional)"))
         jd_row = QHBoxLayout()
-        self._jd_input = self.ctx.ui.make_input(placeholder="Path to job description PDF or text...", prompt="--jd ")
+        self._jd_input = self.ctx.ui.make_input(placeholder="Path to job description PDF or text...", prompt="Job Description")
         self._jd_btn   = self.ctx.ui.make_button("BROWSE")
         self._jd_btn.clicked.connect(self._browse_jd)
         jd_row.addWidget(self._jd_input, stretch=1)
@@ -122,7 +122,7 @@ class SetupScreen(BaseScreen):
         adv_win.add_widget(self.ctx.ui.make_separator())
 
         adv_win.add_widget(self._flag_label("--temperature", "Temperature"))
-        self._temp_input = self.ctx.ui.make_input(placeholder="0.7", prompt="--temperature ")
+        self._temp_input = self.ctx.ui.make_input(placeholder="0.7", prompt="Temperature")
         adv_win.add_widget(self._temp_input)
 
         adv_win.add_widget(self.ctx.ui.make_separator())

@@ -5,9 +5,10 @@ Footer: CoreStatusBar
 Overlay: CRTOverlay (rendered on top of everything)
 """
 from PySide6.QtWidgets import (
-    QMainWindow, QWidget, QHBoxLayout, QVBoxLayout, QStackedWidget
+    QMainWindow, QWidget, QHBoxLayout, QVBoxLayout,
+    QLabel, QStackedWidget
 )
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, QSize
 from frontend.core.app_context import AppContext
 from frontend.components.core.crt_overlay import CRTOverlay
 from frontend.theme.constants import Constants
@@ -49,9 +50,15 @@ class MainWindow(QMainWindow):
                 
                 self.setWindowIcon(QIcon(rounded))
 
-        # ── Root layout ────────────────────────────────────────────────
-        root = QWidget()
-        root_layout = QVBoxLayout(root)
+        # ── Root State Manager ──────────────────────────────────────────
+        self.root_stack = QStackedWidget(self)
+        self.setCentralWidget(self.root_stack)
+
+        # ── Application Shell (State 1) ─────────────────────────────────
+        self.app_shell = QWidget()
+        self.app_shell.setObjectName("MainWindowContent")
+        self.app_shell.setStyleSheet("QWidget#MainWindowContent { background: transparent; }")
+        root_layout = QVBoxLayout(self.app_shell)
         root_layout.setContentsMargins(0, 0, 0, 0)
         root_layout.setSpacing(0)
 
@@ -81,8 +88,11 @@ class MainWindow(QMainWindow):
         top_bar_layout.addStretch()
         
         # Greeting (Right)
-        greeting_lbl = ctx.ui.make_label("Hello, Aniket!", role="secondary")
-        top_bar_layout.addWidget(greeting_lbl)
+        self.greeting_lbl = ctx.ui.make_label("Hello, User!", role="secondary")
+        self._update_greeting(ctx.profile_service.current_profile)
+        ctx.profile_service.profile_updated.connect(self._update_greeting)
+        
+        top_bar_layout.addWidget(self.greeting_lbl)
         
         root_layout.addWidget(self.top_bar)
 
@@ -106,7 +116,7 @@ class MainWindow(QMainWindow):
         self.status_bar = ctx.ui.make_statusbar()
         root_layout.addWidget(self.status_bar)
 
-        self.setCentralWidget(root)
+
 
         # ── Navigation setup ──────────────────────────────────────────
         self.ctx.navigation_controller.set_stack(self.content_stack)
@@ -119,9 +129,17 @@ class MainWindow(QMainWindow):
         self._init_screens()
 
         # ── CRT Overlay (must be last — sits on top of everything) ─────
-        self.crt = CRTOverlay(self, scanlines=True, vignette=True, flicker=False)
-        self.crt.resize(self.size())
-        self.crt.show()
+        if self.ctx.theme_manager.active_theme.id == "industrial":
+            self.crt = CRTOverlay(self, scanlines=True, vignette=True, flicker=False)
+            self.crt.resize(self.size())
+            self.crt.show()
+
+    def _update_greeting(self, profile):
+        name = profile.name.strip()
+        if name:
+            self.greeting_lbl.setText(f"Hello, {name}!")
+        else:
+            self.greeting_lbl.setText("Hello, Guest!")
 
     def _init_screens(self):
         nav = self.ctx.navigation_controller
@@ -142,7 +160,25 @@ class MainWindow(QMainWindow):
         nav.register_screen("models",    ModelsScreen(self.ctx, self.content_stack))
         nav.register_screen("settings",  SettingsScreen(self.ctx, self.content_stack))
 
-        nav.push("interview_modes")
+        from frontend.screens.onboarding.screen import OnboardingScreen
+        # Note: onboarding is not part of the main navigation stack
+        self.onboarding_screen = OnboardingScreen(self.ctx, self.root_stack)
+        self.onboarding_screen.vm.onboarding_completed.connect(self._on_onboarding_completed)
+        
+        # Add root states
+        self.root_stack.addWidget(self.onboarding_screen) # Index 0: Onboarding
+        self.root_stack.addWidget(self.app_shell)         # Index 1: AppShell
+
+        if self.ctx.profile_service.requires_onboarding:
+            self.root_stack.setCurrentIndex(0)
+        else:
+            self.root_stack.setCurrentIndex(1)
+            self.ctx.profile_service.verify_resume()
+            nav.push("interview_modes")
+            
+    def _on_onboarding_completed(self):
+        self.root_stack.setCurrentIndex(1)
+        self.ctx.navigation_controller.push("interview_modes")
 
     def _on_navigated(self, screen_id: str):
         self.sidebar.reflect_navigation(screen_id)

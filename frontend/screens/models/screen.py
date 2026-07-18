@@ -61,7 +61,7 @@ class ModelsScreen(BaseScreen):
         list_win.add_widget(self._list)
 
         add_row = QHBoxLayout()
-        self._add_input = self.ctx.ui.make_input(placeholder="Path to .gguf file...", prompt="--path ")
+        self._add_input = self.ctx.ui.make_input(placeholder="Path to .gguf file...", prompt="Path")
         self._add_btn   = self.ctx.ui.make_button("ADD MODEL")
         self._add_btn.clicked.connect(self._add_model)
         add_row.addWidget(self._add_input, stretch=1)

@@ -17,6 +17,7 @@ from frontend.core.app_context import AppContext
 from frontend.core.resources import ResourceManager
 from frontend.core.theme import ThemeManager
 from frontend.core.navigation import NavigationController
+from frontend.core.profile_service import ProfileService
 from frontend.state.store import UIStore
 from frontend.views.main_window import MainWindow
 
@@ -141,18 +142,20 @@ def main() -> int:
         theme_manager = ThemeManager()
         theme_manager._registry.auto_discover([Path(__file__).parent / "themes" / "builtin"])
         nav_controller = NavigationController()
+        profile_service = ProfileService()
 
         app_context = AppContext(
             resource_manager=resource_manager,
             theme_manager=theme_manager,
             navigation_controller=nav_controller,
+            profile_service=profile_service,
             store=store,
         )
         t_res_end = time.time()
 
         # ── Apply Theme (loads QSS, hydrates tokens) ───────────────────
         t_theme = time.time()
-        theme_manager.apply_theme("industrial")
+        theme_manager.apply_theme("modern")
         t_theme_end = time.time()
 
         # ── Set window icon ────────────────────────────────────────────

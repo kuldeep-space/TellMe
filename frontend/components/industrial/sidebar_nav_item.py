@@ -105,7 +105,7 @@ class SidebarNavItem(QAbstractButton):
             pix_painter.fillRect(icon_pixmap.rect(), icon_color)
             pix_painter.end()
             
-            painter.drawPixmap(icon_x, icon_y, icon_pixmap)
+            painter.drawPixmap(int(icon_x), int(icon_y), icon_pixmap)
             
         # 5. Text rendering
         text_x = icon_x + icon_size + 12 if self._svg_renderer else left_padding
