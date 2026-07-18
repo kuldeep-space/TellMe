@@ -25,7 +25,10 @@ class ModernSlider(QWidget):
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(16)
         
+        self.setLayoutDirection(Qt.LayoutDirection.LeftToRight)
+        
         self.slider = NoScrollSlider(Qt.Orientation.Horizontal)
+        self.slider.setLayoutDirection(Qt.LayoutDirection.LeftToRight)
         self.slider.setMinimum(int(self.min_val * self.scale_factor))
         self.slider.setMaximum(int(self.max_val * self.scale_factor))
         self.slider.setSingleStep(int(self.step * self.scale_factor))

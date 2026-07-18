@@ -17,9 +17,15 @@ from backend.domain.models import (
 
 logger = logging.getLogger(__name__)
 
-_REGISTRY_DIR  = os.path.join(os.path.dirname(__file__), "..", "..", "runtime")
-_REGISTRY_PATH = os.path.join(_REGISTRY_DIR, "models.json")
-_MODELS_DIR    = os.path.join(os.path.dirname(__file__), "..", "..", "runtime", "models")
+def get_registry_dir() -> str:
+    from backend.config.settings import get_settings
+    return str(get_settings().runtime_path)
+
+def get_registry_path() -> str:
+    return os.path.join(get_registry_dir(), "models.json")
+
+def get_models_dir() -> str:
+    return os.path.join(get_registry_dir(), "models")
 
 
 class ModelDatabase:
@@ -28,7 +34,9 @@ class ModelDatabase:
     All paths stored are absolute to avoid broken references.
     """
 
-    def __init__(self, registry_path: str = _REGISTRY_PATH):
+    def __init__(self, registry_path: Optional[str] = None):
+        if registry_path is None:
+            registry_path = get_registry_path()
         self._path = os.path.abspath(registry_path)
         os.makedirs(os.path.dirname(self._path), exist_ok=True)
 
@@ -116,8 +124,9 @@ class ModelRegistry:
 
     def get_managed_models_dir(self) -> str:
         """Returns the absolute path to the managed model storage directory."""
-        os.makedirs(_MODELS_DIR, exist_ok=True)
-        return os.path.abspath(_MODELS_DIR)
+        models_dir = get_models_dir()
+        os.makedirs(models_dir, exist_ok=True)
+        return os.path.abspath(models_dir)
 
     def _persist(self):
         self._db.save_all(list(self._models.values()))

@@ -15,13 +15,7 @@ env/
 *.env.local
 
 # Runtime Data (code-free, generated at runtime)
-runtime/cache/
-runtime/logs/
-runtime/temp/
-runtime/sessions/
-runtime/*.db
-runtime/*.db-shm
-runtime/*.db-wal
+runtime/
 
 # Build Artifacts
 dist/

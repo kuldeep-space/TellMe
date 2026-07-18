@@ -102,7 +102,7 @@ class PlaygroundWidget(QFrame):
         
         # ── HEADER ──
         header_row = QHBoxLayout()
-        header = QLabel("⚡ Interactive Playground")
+        header = QLabel("Interactive Playground")
         header.setProperty("class", "HeaderLabel")
         header_row.addWidget(header)
         

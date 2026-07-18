@@ -23,6 +23,8 @@ class PlaygroundService:
         Executes a dynamic provider action in the background.
         """
         def _action_worker(worker=None):
+            import time
+            time.sleep(0.1)
             from backend.core.provider_registry import ProviderRegistry
             from backend.domain.provider import ProviderConfiguration, ProviderType, ProviderCategory
             from backend.config.settings import get_settings
@@ -65,6 +67,8 @@ class PlaygroundService:
         otherwise falls back to the legacy API provider path.
         """
         def _generation_worker(worker=None):
+            import time
+            time.sleep(0.1)
             from backend.config.settings import get_settings
             import json, os
             final_params = dict(params)
@@ -99,12 +103,12 @@ class PlaygroundService:
             else:
                 # API provider path — use saved provider_id and its config
                 saved_provider_id = cfg.get("provider_id")
-                saved_config = cfg.get("configuration", {})
+                saved_config = cfg.get("configuration") or {}
                 provider_id = saved_provider_id or session.provider_id
                 final_params["provider_id"] = provider_id
                 # Merge saved provider config (API key, base_url, model) into params
                 for k, v in saved_config.items():
-                    final_params.setdefault(k, v)
+                    final_params[k] = v
 
             request = InferenceRequest(
                 session_id=session.session_id,
