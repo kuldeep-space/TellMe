@@ -29,7 +29,7 @@ class MainWindow(QMainWindow):
         from PySide6.QtGui import QIcon, QPixmap, QPainter, QPainterPath
         from PySide6.QtCore import Qt, QRectF
         
-        logo_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "assets", "logos", "Logo-without.png")
+        logo_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "assets", "logos", "Logo.png")
         if os.path.exists(logo_path):
             pixmap = QPixmap(logo_path)
             if not pixmap.isNull():
@@ -229,11 +229,12 @@ class MainWindow(QMainWindow):
         """Asynchronously pre-loads the selected model in the background at startup."""
         import json
         import os
+        from backend.config.settings import get_settings
         from backend.core.tasks import TaskManager
         from backend.core.model_registry import ModelRegistry
         from backend.core.model_runtime import ModelRuntime
 
-        config_path = os.path.join("D:\\TellMe\\runtime", "model_config.json")
+        config_path = os.path.join(get_settings().runtime_path, "model_config.json")
         if not os.path.exists(config_path):
             return
 
@@ -257,7 +258,7 @@ class MainWindow(QMainWindow):
             self.status_bar.set_status(f"PRE-LOADING: {descriptor.display_name}")
             
             # Load global runtime config
-            runtime_cfg_path = os.path.join("D:\\TellMe\\runtime", "runtime_config.json")
+            runtime_cfg_path = os.path.join(get_settings().runtime_path, "runtime_config.json")
             runtime_config = {}
             if os.path.exists(runtime_cfg_path):
                 with open(runtime_cfg_path, "r") as f:

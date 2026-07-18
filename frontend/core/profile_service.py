@@ -81,7 +81,8 @@ class ProfileService(QObject):
         return True
 
     def _get_resumes_dir(self) -> Path:
-        base_dir = Path("runtime/resumes").resolve()
+        from backend.config.settings import get_settings
+        base_dir = (get_settings().runtime_path / "resumes").resolve()
         base_dir.mkdir(parents=True, exist_ok=True)
         return base_dir
 

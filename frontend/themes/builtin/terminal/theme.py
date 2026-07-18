@@ -98,8 +98,8 @@ class TerminalTheme(AbstractBaseTheme):
                 setattr(self._settings, k, v)
 
     def load_settings(self) -> None:
-        from pathlib import Path
-        settings_dir = Path("runtime") / "theme_settings"
+        from backend.config.settings import get_settings
+        settings_dir = get_settings().runtime_path / "theme_settings"
         self._settings = TerminalThemeSettings.load(settings_dir)
 
     def get_settings_schema(self) -> dict:

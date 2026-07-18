@@ -26,7 +26,8 @@ from backend.domain.provider import FieldType, ProviderCategory
 
 logger = logging.getLogger(__name__)
 
-_RUNTIME_DIR = os.path.join("D:\\TellMe\\runtime")
+from backend.config.settings import get_settings
+_RUNTIME_DIR = str(get_settings().runtime_path)
 
 _TAB_STYLE = """
     QTabWidget::pane {

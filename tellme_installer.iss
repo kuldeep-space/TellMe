@@ -22,7 +22,16 @@ WizardStyle=modern
 SetupIconFile=D:\TellMe\frontend\assets\logos\Logo.ico
 WizardImageFile=D:\TellMe\frontend\assets\logos\Logo.bmp
 WizardSmallImageFile=D:\TellMe\frontend\assets\logos\Logo_small.bmp
+CloseApplications=force
+RestartApplications=yes
 
+[InstallDelete]
+; Clean up old application binaries to prevent DLL version mismatches from older Nuitka compiles
+Type: files; Name: "{app}\{#MyAppExeName}"
+Type: files; Name: "{app}\*.dll"
+Type: files; Name: "{app}\*.pyd"
+Type: filesandordirs; Name: "{app}\assets"
+Type: filesandordirs; Name: "{app}\frontend"
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
@@ -50,7 +59,7 @@ Source: "{#SourceAppDir}\frontend\themes\*"; DestDir: "{app}\frontend\themes"; F
 ; Runtime config, settings, database, and folders (excluding the massive 8.5 GB GGUF model file)
 ; Excludes is used so the installer remains small, and the model can be placed in target user's runtime/models/ folder.
 ; If you WANT to bundle the 8.5 GB model file directly in the installer, delete the "Excludes: ..." from the line below and uncomment the model line.
-Source: "{#SourceAppDir}\runtime\*"; DestDir: "{app}\runtime"; Excludes: "models\*.gguf,logs\*,temp\*,sessions\*"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "{#SourceAppDir}\runtime\*"; DestDir: "{app}\runtime"; Excludes: "models\*.gguf,logs\*,temp\*,sessions\*,resumes\*,models.json,model_config.json,runtime_config.json,provider_*.json"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 ; Optional: To bundle the 8.5 GB model file in the installer, uncomment the line below:
 ; Source: "{#SourceAppDir}\runtime\models\Qwen3-14B-Q4_K_M.gguf"; DestDir: "{app}\runtime\models"; Flags: ignoreversion
@@ -61,3 +70,10 @@ Name: "{autodesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: de
 
 [Run]
 Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
+
+[Registry]
+Root: HKCU; Subkey: "Software\TellMe"; Flags: uninsdeletekey
+
+[UninstallDelete]
+Type: filesandordirs; Name: "{localappdata}\TellMe"
+

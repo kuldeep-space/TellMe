@@ -29,7 +29,7 @@ class OnboardingScreen(BaseScreen):
         # ── Branding ──────────────────────────────────────────────
         # Logo
         logo_lbl = QLabel()
-        logo_pixmap = self.ctx.resource_manager.get_pixmap("Logo-without.png")
+        logo_pixmap = self.ctx.resource_manager.get_pixmap("Logo.png")
         if not logo_pixmap.isNull():
             logo_lbl.setPixmap(logo_pixmap.scaled(120, 120, Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation))
         logo_lbl.setAlignment(Qt.AlignmentFlag.AlignCenter)

@@ -1,3 +1,3 @@
 @echo off
 echo Starting TellMe standalone compilation using Nuitka...
-python -m nuitka --standalone --show-memory --show-progress --enable-plugin=pyside6 --include-package=frontend.themes.builtin --include-package=backend.providers.adapters --follow-imports frontend/app.py
+python -m nuitka --standalone --windows-console-mode=disable --windows-icon-from-ico=frontend/assets/logos/Logo.ico --windows-company-name="TellMe AI" --windows-product-name="TellMe" --windows-file-description="TellMe - Voice-Enabled AI Assistant" --windows-file-version="0.1.0.0" --windows-product-version="0.1.0.0" --lto=yes --remove-output --show-memory --show-progress --enable-plugin=pyside6 --include-package=frontend.themes.builtin --include-package=backend.providers.adapters --follow-imports frontend/app.py

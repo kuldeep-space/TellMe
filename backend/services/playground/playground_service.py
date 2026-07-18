@@ -25,10 +25,11 @@ class PlaygroundService:
         def _action_worker(worker=None):
             from backend.core.provider_registry import ProviderRegistry
             from backend.domain.provider import ProviderConfiguration, ProviderType, ProviderCategory
+            from backend.config.settings import get_settings
             import json, os
             
             # Reconstruct the config (in a real app, this might use a DB)
-            config_path = os.path.join("D:\\TellMe\\runtime", "model_config.json")
+            config_path = os.path.join(get_settings().runtime_path, "model_config.json")
             config_data = {}
             if os.path.exists(config_path):
                 with open(config_path, "r") as f:
@@ -64,11 +65,12 @@ class PlaygroundService:
         otherwise falls back to the legacy API provider path.
         """
         def _generation_worker(worker=None):
+            from backend.config.settings import get_settings
             import json, os
             final_params = dict(params)
 
             # ── Resolve model_id from ModelRegistry (local models) ───────────
-            config_path = os.path.join("D:\\TellMe\\runtime", "model_config.json")
+            config_path = os.path.join(get_settings().runtime_path, "model_config.json")
             selected_model_id = None
             cfg = {}
             if os.path.exists(config_path):
@@ -80,7 +82,7 @@ class PlaygroundService:
                     pass
 
             # ── Load global runtime config ────────────────────────────────────
-            runtime_path = os.path.join("D:\\TellMe\\runtime", "runtime_config.json")
+            runtime_path = os.path.join(get_settings().runtime_path, "runtime_config.json")
             if os.path.exists(runtime_path):
                 try:
                     with open(runtime_path, "r") as f:
