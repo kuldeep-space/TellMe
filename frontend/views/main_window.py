@@ -108,8 +108,15 @@ class MainWindow(QMainWindow):
         row_layout.addWidget(self.sidebar)
 
         # Content stack
+        self.workspace_stack = QStackedWidget()
+        row_layout.addWidget(self.workspace_stack, stretch=1)
+        
         self.content_stack = QStackedWidget()
-        row_layout.addWidget(self.content_stack, stretch=1)
+        self.workspace_stack.addWidget(self.content_stack)
+        
+        from frontend.screens.settings.settings_panel import SettingsPanel
+        self.settings_panel = SettingsPanel(self.ctx)
+        self.workspace_stack.addWidget(self.settings_panel)
 
         root_layout.addWidget(main_row, stretch=1)
 
@@ -117,13 +124,11 @@ class MainWindow(QMainWindow):
         self.status_bar = ctx.ui.make_statusbar()
         root_layout.addWidget(self.status_bar)
 
-
-
         # ── Navigation setup ──────────────────────────────────────────
         self.ctx.navigation_controller.set_stack(self.content_stack)
 
         # Wire sidebar → nav, nav → sidebar
-        self.sidebar.navigation_requested.connect(self.ctx.navigation_controller.push)
+        self.sidebar.navigation_requested.connect(self._on_navigation_requested)
         self.ctx.navigation_controller.navigated.connect(self._on_navigated)
 
         # Wire draft integration if sidebar supports it
@@ -219,6 +224,41 @@ class MainWindow(QMainWindow):
     def _on_onboarding_completed(self):
         self.root_stack.setCurrentIndex(1)
         self.ctx.navigation_controller.push("interview_modes")
+
+    def _on_navigation_requested(self, screen_id: str):
+        if screen_id == "settings":
+            self.workspace_stack.setCurrentIndex(1)
+            self.settings_panel.show_page("profile")
+            if hasattr(self, "sidebar"):
+                self.sidebar.reflect_navigation("settings_profile")
+        elif screen_id == "settings_profile":
+            self.settings_panel.show_page("profile")
+            if hasattr(self, "sidebar"):
+                self.sidebar.reflect_navigation("settings_profile")
+        elif screen_id == "settings_model":
+            self.settings_panel.show_page("model_settings")
+            if hasattr(self, "sidebar"):
+                self.sidebar.reflect_navigation("settings_model")
+        elif screen_id == "settings_close":
+            if self.settings_panel.attempt_close():
+                self.workspace_stack.setCurrentIndex(0)
+                if hasattr(self.sidebar, "deactivate_settings_mode"):
+                    self.sidebar.deactivate_settings_mode()
+            else:
+                # User cancelled close, so we need to stay in settings mode
+                if not self.sidebar._settings_mode:
+                    self.sidebar._toggle_settings_mode()
+        else:
+            # Check if settings is currently open
+            if self.workspace_stack.currentIndex() == 1:
+                if not self.settings_panel.attempt_close():
+                    # If unsaved changes prevent closing, just return
+                    return
+                self.workspace_stack.setCurrentIndex(0)
+                if hasattr(self.sidebar, "deactivate_settings_mode"):
+                    self.sidebar.deactivate_settings_mode()
+                    
+            self.ctx.navigation_controller.push(screen_id)
 
     def _on_navigated(self, screen_id: str):
         self.sidebar.reflect_navigation(screen_id)

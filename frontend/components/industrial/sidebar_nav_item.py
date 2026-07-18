@@ -25,12 +25,20 @@ class SidebarNavItem(QAbstractButton):
         # Load icon if present
         self._svg_renderer = None
         if item.icon:
-            import os
-            # Standard path for icons
-            base_dir = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
-            icon_path = os.path.join(base_dir, "assets", "icons", item.icon)
-            if os.path.exists(icon_path):
-                self._svg_renderer = QSvgRenderer(icon_path)
+            self.set_icon(item.icon)
+        
+        self.installEventFilter(self)
+
+    def set_icon(self, icon_name: str):
+        import os
+        from PySide6.QtSvg import QSvgRenderer
+        base_dir = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+        icon_path = os.path.join(base_dir, "assets", "icons", icon_name)
+        if os.path.exists(icon_path):
+            self._svg_renderer = QSvgRenderer(icon_path)
+        else:
+            self._svg_renderer = None
+        self.update()
         
         self.installEventFilter(self)
 

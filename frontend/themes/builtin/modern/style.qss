@@ -6,7 +6,7 @@ QWidget {
 }
 
 QMainWindow {
-    background-color: {{ colors.bg_base }};
+    background-color: {{ colors.background }};
 }
 
 QScrollArea {
@@ -25,7 +25,7 @@ QLabel#CoreLabelSecondary {
     color: {{ colors.text_secondary }};
 }
 QLabel#CoreLabelDanger {
-    color: {{ colors.danger }};
+    color: {{ status.danger }};
 }
 QLabel#CoreLabelH1 {
     font-size: 24px;
@@ -38,20 +38,20 @@ QLabel#CoreLabelH2 {
 
 /* Modern Panel */
 QWidget#ModernPanel {
-    background-color: {{ colors.bg_panel }};
-    border-radius: {{ metrics.radius_md }};
+    background-color: {{ colors.surface_elevated }};
+    border-radius: {{ radius.md }};
     border: 1px solid {{ colors.border }};
 }
 
 /* Inputs */
-QWidget#ModernInputContainer {
-    background-color: {{ colors.bg_surface }};
-    border-radius: {{ metrics.radius_sm }};
-    border: 1px solid transparent;
+QFrame#ModernInputContainer {
+    background-color: {{ colors.surface }};
+    border-radius: {{ radius.sm }};
+    border: 1px solid {{ colors.border }};
 }
-QWidget#ModernInputContainer:focus-within {
+QFrame#ModernInputContainer:focus-within {
     border: 1px solid {{ colors.accent }};
-    background-color: {{ colors.bg_hover }};
+    background-color: {{ colors.surface_hover }};
 }
 QLabel#ModernInputPrompt {
     color: {{ colors.text_muted }};
@@ -69,42 +69,57 @@ QLineEdit#ModernInputBox:focus {
 QPushButton#ModernButtonPrimary {
     background-color: {{ colors.accent }};
     color: #ffffff;
-    border-radius: {{ metrics.radius_sm }};
+    border-radius: {{ radius.sm }};
     border: none;
     font-weight: bold;
+    padding: 8px 16px;
 }
 QPushButton#ModernButtonPrimary:hover {
     background-color: {{ colors.accent_hover }};
 }
 QPushButton#ModernButtonPrimary:pressed {
-    background-color: {{ colors.accent_active }};
+    background-color: {{ colors.accent_dim }};
 }
 
 QPushButton#ModernButtonSecondary {
-    background-color: {{ colors.bg_surface }};
+    background-color: {{ colors.surface }};
     color: {{ colors.text_primary }};
-    border-radius: {{ metrics.radius_sm }};
+    border-radius: {{ radius.sm }};
     border: 1px solid {{ colors.border }};
+    padding: 8px 16px;
 }
 QPushButton#ModernButtonSecondary:hover {
-    background-color: {{ colors.bg_hover }};
+    background-color: {{ colors.surface_hover }};
     border: 1px solid {{ colors.text_muted }};
 }
 
 QPushButton#ModernButtonGhost {
     background-color: transparent;
     color: {{ colors.text_secondary }};
-    border-radius: {{ metrics.radius_sm }};
+    border-radius: {{ radius.sm }};
     border: none;
+    padding: 8px 16px;
 }
 QPushButton#ModernButtonGhost:hover {
-    background-color: {{ colors.bg_hover }};
+    background-color: {{ colors.surface_hover }};
     color: {{ colors.text_primary }};
+}
+
+QPushButton#ModernButtonDanger {
+    background-color: {{ status.danger }};
+    color: #ffffff;
+    border-radius: {{ radius.sm }};
+    border: none;
+    font-weight: bold;
+    padding: 8px 16px;
+}
+QPushButton#ModernButtonDanger:hover {
+    background-color: #ff6b6b;
 }
 
 /* Progress */
 QProgressBar#ModernProgress {
-    background-color: {{ colors.bg_surface }};
+    background-color: {{ colors.surface }};
     border-radius: 3px;
     border: none;
 }

@@ -109,8 +109,7 @@ class ProfileService(QObject):
                                 pass
                     
                     # Copy the new one
-                    ext = os.path.splitext(raw_path)[1]
-                    new_filename = f"{uuid.uuid4()}{ext}"
+                    new_filename = os.path.basename(raw_path)
                     new_path = resumes_dir / new_filename
                     shutil.copy2(raw_path, new_path)
                     self._profile.resume_path = str(new_path)

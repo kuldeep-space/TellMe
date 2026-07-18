@@ -6,7 +6,7 @@ the interview session.
 """
 
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 from uuid import UUID, uuid4
 
 
@@ -37,4 +37,4 @@ class JobDescription:
     nice_to_haves: list[str] = field(default_factory=list)
     is_parsed: bool = False
     job_id: UUID = field(default_factory=uuid4)
-    created_at: datetime = field(default_factory=datetime.utcnow)
+    created_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))

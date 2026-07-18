@@ -8,8 +8,8 @@ from backend.core.logging import get_logger
 
 _logger = get_logger(__name__)
 
-# Matches {colors.accent}, {typography.size_base}, etc.
-_TOKEN_REGEX = re.compile(r"\{([\w\.]+)\}")
+# Matches {colors.accent} or {{ colors.accent }} with optional spaces
+_TOKEN_REGEX = re.compile(r"\{+\s*([\w\.]+)\s*\}+")
 
 class QSSHydrator:
     """

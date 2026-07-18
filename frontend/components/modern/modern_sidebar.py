@@ -45,11 +45,31 @@ class ModernSidebar(BaseSidebar):
         sep1.setStyleSheet(f"background: {sub_color}; opacity: 0.1; margin: 12px 0px;")
         layout.addWidget(sep1)
         
+        self._settings_mode = False
+        self._settings_sub_items = []
+        
         settings_item = NavigationItem(id="settings", title="Settings", icon="settings.svg", route="settings", order=90)
-        settings_btn = SidebarNavItem(engine, settings_item)
-        settings_btn.clicked.connect(lambda: self._on_click("settings"))
-        layout.addWidget(settings_btn)
-        self._buttons["settings"] = settings_btn
+        self.settings_btn = SidebarNavItem(engine, settings_item)
+        self.settings_btn.clicked.connect(self._toggle_settings_mode)
+        layout.addWidget(self.settings_btn)
+        self._buttons["settings"] = self.settings_btn
+        
+        # Settings Sub-items (Hidden by default)
+        self._settings_sub_items_map = {}
+        
+        profile_item = SidebarSubItem(engine, "Profile", closable=False)
+        profile_item.clicked.connect(lambda: self.navigation_requested.emit("settings_profile"))
+        profile_item.hide()
+        layout.addWidget(profile_item)
+        self._settings_sub_items.append(profile_item)
+        self._settings_sub_items_map["settings_profile"] = profile_item
+        
+        model_item = SidebarSubItem(engine, "Model Settings", closable=False)
+        model_item.clicked.connect(lambda: self.navigation_requested.emit("settings_model"))
+        model_item.hide()
+        layout.addWidget(model_item)
+        self._settings_sub_items.append(model_item)
+        self._settings_sub_items_map["settings_model"] = model_item
         
         sep2 = QFrame()
         sep2.setFixedHeight(1)
@@ -60,6 +80,34 @@ class ModernSidebar(BaseSidebar):
         github_btn = SidebarNavItem(engine, github_item)
         github_btn.clicked.connect(self._open_github)
         layout.addWidget(github_btn)
+
+    def _toggle_settings_mode(self):
+        self._settings_mode = not self._settings_mode
+        if self._settings_mode:
+            # Entering Settings Mode
+            self.settings_btn.item.title = "Close"
+            self.settings_btn.set_icon("close.svg")
+            self.settings_btn.update()
+            for item in self._settings_sub_items:
+                item.show()
+            self.navigation_requested.emit("settings")
+        else:
+            # Exiting Settings Mode
+            self.settings_btn.item.title = "Settings"
+            self.settings_btn.set_icon("settings.svg")
+            self.settings_btn.update()
+            for item in self._settings_sub_items:
+                item.hide()
+            self.navigation_requested.emit("settings_close")
+
+    def deactivate_settings_mode(self):
+        if self._settings_mode:
+            self._settings_mode = False
+            self.settings_btn.item.title = "Settings"
+            self.settings_btn.set_icon("settings.svg")
+            self.settings_btn.update()
+            for item in self._settings_sub_items:
+                item.hide()
 
     def paintEvent(self, event):
         """Very subtle or no border for modern theme."""
@@ -81,6 +129,11 @@ class ModernSidebar(BaseSidebar):
     def _set_active(self, screen_id: str):
         for sid, btn in self._buttons.items():
             btn.setChecked(sid == screen_id)
+                
+        if hasattr(self, '_settings_sub_items_map'):
+            for sid, item in self._settings_sub_items_map.items():
+                item.set_active(sid == screen_id)
+                
         self._current = screen_id
 
     def reflect_navigation(self, screen_id: str):
@@ -88,7 +141,7 @@ class ModernSidebar(BaseSidebar):
 
     def on_drafts_changed(self, drafts: dict):
         self._drafts = drafts
-        # Remove old subitems
+        
         for item in self._draft_items.values():
             self._nav_layout.removeWidget(item)
             item.deleteLater()
