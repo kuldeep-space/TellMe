@@ -143,6 +143,9 @@ def main() -> int:
         theme_manager._registry.auto_discover([Path(__file__).parent / "themes" / "builtin"])
         nav_controller = NavigationController()
         profile_service = ProfileService()
+        
+        from frontend.state.draft_manager import DraftManager
+        draft_manager = DraftManager(store)
 
         app_context = AppContext(
             resource_manager=resource_manager,
@@ -150,6 +153,7 @@ def main() -> int:
             navigation_controller=nav_controller,
             profile_service=profile_service,
             store=store,
+            draft_manager=draft_manager,
         )
         t_res_end = time.time()
 

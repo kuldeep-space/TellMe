@@ -1,11 +1,13 @@
 from typing import Any
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QSpinBox, QComboBox, QTextEdit, QFileDialog
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, Signal
 from backend.domain.interview_mode import InputField, FieldType
 from frontend.core.app_context import AppContext
 
 class FieldWidget(QWidget):
     """Base class for all dynamic form widgets. Handles label and description rendering."""
+    value_changed = Signal()
+
     def __init__(self, field: InputField, ctx: AppContext, parent=None):
         super().__init__(parent)
         self.field = field
@@ -63,10 +65,16 @@ class TextFieldWidget(FieldWidget):
         if field.default_value:
             self.input.set_text(str(field.default_value))
             
+        if hasattr(self.input, 'line_edit'):
+            self.input.line_edit.textChanged.connect(lambda _: self.value_changed.emit())
+            
         self._layout.addWidget(self.input)
 
     def get_value(self) -> Any:
         return self.input.text()
+        
+    def set_value(self, value: Any):
+        self.input.set_text(str(value) if value else "")
 
 class TextAreaFieldWidget(FieldWidget):
     def __init__(self, field: InputField, ctx: AppContext, parent=None):
@@ -96,10 +104,15 @@ class TextAreaFieldWidget(FieldWidget):
         if field.default_value:
             self.textarea.setPlainText(str(field.default_value))
             
+        self.textarea.textChanged.connect(self.value_changed.emit)
+            
         self._layout.addWidget(self.textarea)
 
     def get_value(self) -> Any:
         return self.textarea.toPlainText()
+        
+    def set_value(self, value: Any):
+        self.textarea.setPlainText(str(value) if value else "")
 
 class NonScrollingSpinBox(QSpinBox):
     def wheelEvent(self, event):
@@ -136,6 +149,8 @@ class NumberFieldWidget(FieldWidget):
         if field.default_value is not None:
             self.spin.setValue(int(field.default_value))
             
+        self.spin.valueChanged.connect(lambda _: self.value_changed.emit())
+            
         container = QWidget()
         hl = QHBoxLayout(container)
         hl.setContentsMargins(0, 0, 0, 0)
@@ -146,6 +161,9 @@ class NumberFieldWidget(FieldWidget):
 
     def get_value(self) -> Any:
         return self.spin.value()
+        
+    def set_value(self, value: Any):
+        self.spin.setValue(int(value) if value else 0)
 
 class NonScrollingComboBox(QComboBox):
     def wheelEvent(self, event):
@@ -203,10 +221,15 @@ class DropdownFieldWidget(FieldWidget):
         if field.default_value and str(field.default_value) in field.options:
             self.combo.setCurrentText(str(field.default_value))
             
+        self.combo.currentTextChanged.connect(lambda _: self.value_changed.emit())
+            
         self._layout.addWidget(self.combo)
 
     def get_value(self) -> Any:
         return self.combo.currentText()
+        
+    def set_value(self, value: Any):
+        self.combo.setCurrentText(str(value) if value else "")
 
 class FileFieldWidget(FieldWidget):
     def __init__(self, field: InputField, ctx: AppContext, parent=None):
@@ -293,6 +316,7 @@ class FileFieldWidget(FieldWidget):
         self.path_display.set_text("")
         self.clear_btn.setVisible(False)
         self.browse_btn.setText("Browse")
+        self.value_changed.emit()
 
     def _browse(self):
         path, _ = QFileDialog.getOpenFileName(self, f"Select {self.field.label}", "", "PDF Files (*.pdf);;All Files (*)")
@@ -301,9 +325,22 @@ class FileFieldWidget(FieldWidget):
             self.path_display.set_text(f"✓ {path.split('/')[-1].split(chr(92))[-1]}")
             self.clear_btn.setVisible(True)
             self.browse_btn.setText("Replace")
+            self.value_changed.emit()
 
     def get_value(self) -> Any:
         return self.file_path
+        
+    def set_value(self, value: Any):
+        if value:
+            self.file_path = str(value)
+            self.path_display.set_text(f"✓ {self.file_path.split('/')[-1].split(chr(92))[-1]}")
+            self.clear_btn.setVisible(True)
+            self.browse_btn.setText("Replace")
+        else:
+            self.file_path = ""
+            self.path_display.set_text("")
+            self.clear_btn.setVisible(False)
+            self.browse_btn.setText("Browse")
 
 # --- Factory ---
 class WidgetFactory:

@@ -1,5 +1,7 @@
 
+from typing import Optional
 from PySide6.QtCore import QObject, Signal, Property
+from frontend.state.draft_model import InterviewDraft
 
 class UIStore(QObject):
     """
@@ -11,6 +13,8 @@ class UIStore(QObject):
     theme_preview_active_changed = Signal(bool)
     preview_theme_id_changed = Signal(str)
     active_interview_mode_changed = Signal(str)
+    drafts_changed = Signal(dict) # dict of InterviewDraft
+    active_draft_id_changed = Signal(str)
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -19,6 +23,8 @@ class UIStore(QObject):
         self._theme_preview_active = False
         self._preview_theme_id = ""
         self._active_interview_mode = ""
+        self.drafts: dict[str, InterviewDraft] = {}
+        self._active_draft_id: Optional[str] = None
         
     @Property(str, notify=theme_changed)
     def current_theme(self) -> str:
@@ -69,4 +75,30 @@ class UIStore(QObject):
         if self._active_interview_mode != value:
             self._active_interview_mode = value
             self.active_interview_mode_changed.emit(value)
+
+    # ── Draft Management ──
+    @property
+    def active_draft_id(self) -> Optional[str]:
+        return self._active_draft_id
+
+    @active_draft_id.setter
+    def active_draft_id(self, value: Optional[str]):
+        if self._active_draft_id != value:
+            self._active_draft_id = value
+            self.active_draft_id_changed.emit(value or "")
+
+    def add_draft(self, draft: InterviewDraft):
+        self.drafts[draft.draft_id] = draft
+        self.drafts_changed.emit(self.drafts)
+
+    def update_draft(self, draft: InterviewDraft):
+        self.drafts[draft.draft_id] = draft
+        self.drafts_changed.emit(self.drafts)
+        
+    def remove_draft(self, draft_id: str):
+        if draft_id in self.drafts:
+            del self.drafts[draft_id]
+            if self._active_draft_id == draft_id:
+                self.active_draft_id = None
+            self.drafts_changed.emit(self.drafts)
 

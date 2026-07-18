@@ -12,6 +12,7 @@ from PySide6.QtCore import Qt, QSize
 from frontend.core.app_context import AppContext
 from frontend.components.core.crt_overlay import CRTOverlay
 from frontend.theme.constants import Constants
+from frontend.components.modern.dialogs import ModernMessageDialog
 
 
 class MainWindow(QMainWindow):
@@ -125,6 +126,17 @@ class MainWindow(QMainWindow):
         self.sidebar.navigation_requested.connect(self.ctx.navigation_controller.push)
         self.ctx.navigation_controller.navigated.connect(self._on_navigated)
 
+        # Wire draft integration if sidebar supports it
+        if hasattr(self.sidebar, "on_drafts_changed"):
+            self.ctx.store.drafts_changed.connect(self.sidebar.on_drafts_changed)
+            self.sidebar.on_drafts_changed(self.ctx.store.drafts)
+        if hasattr(self.sidebar, "draft_close_requested"):
+            self.sidebar.draft_close_requested.connect(self._on_draft_close_requested)
+        if hasattr(self.sidebar, "draft_clicked"):
+            self.sidebar.draft_clicked.connect(self._on_draft_clicked)
+        if hasattr(self.sidebar, "on_active_draft_id_changed"):
+            self.ctx.store.active_draft_id_changed.connect(self.sidebar.on_active_draft_id_changed)
+
         # Init screens (must happen AFTER signals are wired so initial push reflects in UI)
         self._init_screens()
 
@@ -140,6 +152,34 @@ class MainWindow(QMainWindow):
             self.greeting_lbl.setText(f"Hello, {name}!")
         else:
             self.greeting_lbl.setText("Hello, Guest!")
+            
+    def _on_draft_close_requested(self, draft_id: str):
+        draft = self.ctx.draft_manager.get_draft(draft_id)
+        if draft and draft.has_unsaved_changes:
+            dialog = ModernMessageDialog(
+                "Delete Draft",
+                f"Are you sure you want to delete your {draft.title} draft? Any unsaved progress will be lost.",
+                self
+            )
+            dialog.add_button("Keep Draft", role="secondary")
+            dialog.add_button("Delete", role="danger")
+            dialog.exec()
+            
+            if dialog.clicked_button != "Delete":
+                return
+                
+        # If the deleted draft is the one currently opened, navigate away
+        is_active = (self.ctx.store.active_draft_id == draft_id)
+        
+        self.ctx.draft_manager.delete_draft(draft_id)
+        
+        # If currently on the config screen viewing THIS draft, navigate away
+        if is_active and self.ctx.navigation_controller.history and self.ctx.navigation_controller.history[-1] == "interview_config":
+            self.ctx.navigation_controller.replace("interview_modes")
+
+    def _on_draft_clicked(self, draft_id: str):
+        self.ctx.draft_manager.set_active_draft(draft_id)
+        self.ctx.navigation_controller.push("interview_config")
 
     def _init_screens(self):
         nav = self.ctx.navigation_controller
@@ -183,6 +223,8 @@ class MainWindow(QMainWindow):
     def _on_navigated(self, screen_id: str):
         self.sidebar.reflect_navigation(screen_id)
         self.status_bar.set_status("v0.1.0")
+        if screen_id not in ["interview_config", "interview"]:
+            self.ctx.draft_manager.set_active_draft(None)
 
     def resizeEvent(self, event):
         super().resizeEvent(event)

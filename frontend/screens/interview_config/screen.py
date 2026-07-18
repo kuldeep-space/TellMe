@@ -61,10 +61,31 @@ class InterviewConfigScreen(BaseScreen):
     def showEvent(self, event):
         """Rebuild the UI when shown to match the active mode."""
         super().showEvent(event)
+        
+    def on_enter(self):
         self.vm.load_mode()
+        
+        draft_id = self.ctx.store.active_draft_id
+        if not draft_id: return
+        draft = self.ctx.draft_manager.get_draft(draft_id)
+        if not draft: return
+        
+        # If the mode changed for this draft somehow, rebuild (shouldn't happen often)
         if self.vm.mode and self.vm.mode.id != self._current_mode_id:
             self._rebuild_dynamic_content()
             self._current_mode_id = self.vm.mode.id
+        
+        self.vm.hydrate_and_bind()
+        
+        # Restore scroll position
+        self.scroll_area.verticalScrollBar().setValue(draft.scroll_position)
+            
+    def on_leave(self):
+        draft_id = self.ctx.store.active_draft_id
+        if draft_id:
+            draft = self.ctx.draft_manager.get_draft(draft_id)
+            if draft:
+                draft.scroll_position = self.scroll_area.verticalScrollBar().value()
 
     def _build_ui(self):
         # ── Main Layout (Scroll Area) ────────────────────────────────────────

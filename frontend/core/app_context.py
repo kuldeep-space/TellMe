@@ -5,6 +5,7 @@ from frontend.core.theme import ThemeManager
 from frontend.core.navigation import NavigationController
 from frontend.core.profile_service import ProfileService
 from frontend.state.store import UIStore
+from frontend.state.draft_manager import DraftManager
 from backend.core.logging import get_logger
 
 @dataclass
@@ -18,6 +19,7 @@ class AppContext:
     navigation_controller: NavigationController
     profile_service: ProfileService
     store: UIStore
+    draft_manager: DraftManager
     logger: object = get_logger("frontend.app_context")
 
     @property

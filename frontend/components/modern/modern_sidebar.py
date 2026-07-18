@@ -5,18 +5,28 @@ from frontend.components.base.base_sidebar import BaseSidebar
 from frontend.engine import StyleEngine
 from frontend.core.navigation import NavigationRegistry, NavigationItem
 from frontend.components.industrial.sidebar_nav_item import SidebarNavItem
+from frontend.components.modern.sidebar_sub_item import SidebarSubItem
+from frontend.state.draft_model import InterviewDraft
+from typing import Optional
 
 class ModernSidebar(BaseSidebar):
+    draft_close_requested = Signal(str)
+    draft_clicked = Signal(str)
+
     def __init__(self, engine: StyleEngine, parent=None):
         super().__init__(engine, parent)
         self.setFixedWidth(250)
         
         layout = QVBoxLayout(self)
-        layout.setContentsMargins(16, 32, 16, 24)
+        layout.setContentsMargins(16, 80, 16, 24)
         layout.setSpacing(4)
         
         self._buttons = {}
         self._current = ""
+        self._draft_items = {} # Maps draft_id -> SidebarSubItem
+        self._nav_layout = layout
+        self._drafts = {}
+        self._active_draft_id = None
         
         main_items = NavigationRegistry.get_main_items()
         for item in main_items:
@@ -75,3 +85,41 @@ class ModernSidebar(BaseSidebar):
 
     def reflect_navigation(self, screen_id: str):
         self._set_active(screen_id)
+
+    def on_drafts_changed(self, drafts: dict):
+        self._drafts = drafts
+        # Remove old subitems
+        for item in self._draft_items.values():
+            self._nav_layout.removeWidget(item)
+            item.deleteLater()
+        self._draft_items.clear()
+        
+        # Find the 'interview_modes' button index
+        insert_idx = -1
+        for i in range(self._nav_layout.count()):
+            item = self._nav_layout.itemAt(i)
+            if item and item.widget() == self._buttons.get("interview_modes"):
+                insert_idx = i + 1
+                break
+                
+        if insert_idx == -1:
+            insert_idx = self._nav_layout.count()
+
+        # Add active drafts
+        # Iterate in sorted order or just as they appear
+        for draft_id, draft in drafts.items():
+            if draft.status == 'active' and (not draft.is_empty or draft_id == self._active_draft_id):
+                sub_item = SidebarSubItem(self.engine, draft.title)
+                
+                # We need to capture draft_id safely in lambda
+                sub_item.clicked.connect(lambda did=draft_id: self.draft_clicked.emit(did))
+                sub_item.close_requested.connect(lambda did=draft_id: self.draft_close_requested.emit(did))
+                
+                self._draft_items[draft_id] = sub_item
+                self._nav_layout.insertWidget(insert_idx, sub_item)
+                insert_idx += 1
+                
+    def on_active_draft_id_changed(self, active_id: str):
+        self._active_draft_id = active_id
+        if hasattr(self, '_drafts'):
+            self.on_drafts_changed(self._drafts)
