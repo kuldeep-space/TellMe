@@ -24,5 +24,9 @@ class ModernButton(QPushButton):
             self.setObjectName("ModernButtonGhost")
         elif variant == ButtonVariant.DANGER:
             self.setObjectName("ModernButtonDanger")
-        
+        elif variant == ButtonVariant.WARNING:
+            self.setObjectName("ModernButtonWarning")
 
+    def set_label(self, label: str):
+        """Update button text — API compatibility with CoreButton."""
+        self.setText(label)

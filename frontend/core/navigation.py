@@ -24,7 +24,10 @@ class NavigationRegistry:
     _items: list[NavigationItem] = [
         NavigationItem(id="interview_modes", title="Interview Modes", icon="interview.svg", route="interview_modes", order=1),
         NavigationItem(id="report", title="Reports", icon="report.svg", route="report", order=2),
-        NavigationItem(id="history", title="History", icon="history.svg", route="history", order=3)
+        NavigationItem(id="history", title="History", icon="history.svg", route="history", order=3),
+        NavigationItem(id="interview_resume", title="Resume Interview (Dev)", icon="settings.svg", route="interview_resume", order=80),
+        NavigationItem(id="interview_behavioral", title="Behavioral Interview (Dev)", icon="settings.svg", route="interview_behavioral", order=81),
+        NavigationItem(id="interview_technical", title="Technical Interview (Dev)", icon="settings.svg", route="interview_technical", order=82),
     ]
     
     @classmethod

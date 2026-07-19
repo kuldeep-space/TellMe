@@ -307,6 +307,22 @@ class MainWindow(QMainWindow):
         self.ctx.navigation_controller.push("interview_modes")
 
     def _on_navigation_requested(self, screen_id: str):
+        if screen_id in ["interview_resume", "interview_behavioral", "interview_technical"]:
+            mode_map = {
+                "interview_resume": "resume_interview",
+                "interview_behavioral": "behavioral_interview",
+                "interview_technical": "technical_interview"
+            }
+            self.ctx.store.active_interview_mode = mode_map[screen_id]
+            if self.workspace_stack.currentIndex() == 1:
+                if not self.settings_panel.attempt_close():
+                    return
+                self.workspace_stack.setCurrentIndex(0)
+                if hasattr(self.sidebar, "deactivate_settings_mode"):
+                    self.sidebar.deactivate_settings_mode()
+            self.ctx.navigation_controller.push("interview")
+            return
+
         if screen_id == "settings":
             self.workspace_stack.setCurrentIndex(1)
             self.settings_panel.show_page("profile")
@@ -342,7 +358,18 @@ class MainWindow(QMainWindow):
             self.ctx.navigation_controller.push(screen_id)
 
     def _on_navigated(self, screen_id: str):
-        self.sidebar.reflect_navigation(screen_id)
+        if screen_id == "interview":
+            mode = self.ctx.store.active_interview_mode
+            mode_to_route = {
+                "resume_interview": "interview_resume",
+                "behavioral_interview": "interview_behavioral",
+                "technical_interview": "interview_technical"
+            }
+            route = mode_to_route.get(mode, "interview_modes")
+            self.sidebar.reflect_navigation(route)
+        else:
+            self.sidebar.reflect_navigation(screen_id)
+            
         self.status_bar.set_status("v0.1.0")
         if screen_id not in ["interview_config", "interview"]:
             self.ctx.draft_manager.set_active_draft(None)

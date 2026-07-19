@@ -39,5 +39,15 @@ class ModernInput(QFrame):
     def set_text(self, text: str):
         self.line_edit.setText(text)
 
+    def setText(self, text: str):
+        self.line_edit.setText(text)
+
+    def clear(self):
+        self.line_edit.clear()
+
+    @property
+    def returnPressed(self):
+        return self.line_edit.returnPressed
+
     def setFocus(self, reason=Qt.FocusReason.OtherFocusReason):
         self.line_edit.setFocus(reason)
